@@ -1,0 +1,220 @@
+/* See license.txt for terms of usage */
+
+.panelNode-firestorageplus {
+    overflow-x: hidden;
+}
+
+.storageTable {
+    width: 100%;
+}
+
+
+/************************************************************************************************/
+/* Header for storage list */
+
+.storageHeaderRow {
+    height: 16px;
+}
+
+.storageHeaderCell {
+    cursor: pointer;
+    -moz-user-select: none;
+    border-bottom: 1px solid #9C9C9C;
+    padding: 0 !important;
+    font-weight: bold;
+    background: #C8C8C8 linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.2)) repeat-x;
+    white-space: nowrap;
+}
+
+.storageHeaderRow > .storageHeaderCell:first-child > .storageHeaderCellBox {
+    padding: 2px 14px 2px 18px;
+}
+
+.storageHeaderCellBox {
+    padding: 2px 14px 2px 10px;
+    border-left: 1px solid #D9D9D9;
+    border-right: 1px solid #9C9C9C;
+}
+
+.storageHeaderCell:hover:active {
+    background-color: #B4B4B4;
+}
+
+.storageHeaderSorted {
+    background-color: #8CA0BE;
+}
+
+.storageHeaderSorted > .storageHeaderCellBox {
+    border-right-color: #6B7C93;
+    background: url(chrome://firestorageplus/skin/arrowDown.png) no-repeat right;    
+}
+
+.storageHeaderSorted.sortedAscending > .storageHeaderCellBox {
+    background-image: url(chrome://firestorageplus/skin/arrowUp.png);
+}
+
+.storageHeaderSorted:hover:active {
+    background-color: #6E87AA;
+}
+
+/************************************************************************************************/
+/* Column visibility */
+
+/*
+ * Every row is for one column, the first selector hides column in the header
+ * (e.g. id=colName) and the second selector in all rows (e.g. class=storageNameCol)
+ * 
+ * If a column is hidden, it's presented in a 'hiddenCols' attribute of the .storageTable
+ * element. Value of the attribute is a whitespace separated list of columns IDs.
+ */
+.storageTable[hiddenCols~=colName] #colName,
+.storageTable[hiddenCols~=colName] .storageNameCol,
+.storageTable[hiddenCols~=colValue] #colValue,
+.storageTable[hiddenCols~=colValue] .storageValueCol {
+    display: none;
+}
+
+.panelNode-storage .storageRowHeader {
+    display: block;
+}
+
+.storageRowHeader {
+    margin-right: 0 !important;
+}
+
+.storageRow .storageRowHeader {
+    background-position: 5px 1px;
+}
+
+#colName > .storageHeaderCellBox {
+    border-left: 0px;
+}
+
+.storageNameLabel:hover {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.storageRow {
+    background: white;
+}
+
+.storageRow:hover {
+    background: #EFEFEF;
+}
+
+.storageCol {
+    padding: 0;
+    vertical-align: top;
+    border-bottom: 1px solid #EFEFEF;  
+    white-space: nowrap;
+}
+
+.storageNameLabel {
+    -moz-box-sizing: padding-box;
+    overflow: hidden;
+    padding-top: 1px;
+    font-weight: bold;
+    min-width: 70px;
+    margin-left: 5px;
+}
+
+.storageNameCol > .storageNameLabel {
+    padding-left: 18px;
+}
+
+.storageRow > .storageNameCol > .storageNameLabel {
+    background-image: url(chrome://firestorageplus/skin/twistyClosed.png);
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    min-height: 12px;
+}
+
+.storageRow.opened > .storageNameCol > .storageNameLabel {
+    background-image: url(chrome://firestorageplus/skin/twistyOpen.png);
+}
+
+.storageValueLabel {
+    color: rgb(128, 128, 128);
+}
+
+/* This style makes sure that only portion of text is visible
+ depending on current size (width) of the parent column */
+.storageValueLabel {
+    overflow: hidden;
+    display: -moz-box;
+}
+
+/* This style is to avoid warning: XUL box for div element contained 
+ an inline span child, forcing all its children to be wrapped in a block, 
+ which is caused by the previous style.
+ 
+ Related to following message:
+ nsIScriptError: XUL box for div element contained an inline #text child,
+ forcing all its children to be wrapped in a block. [JavaScript Warning:
+ "XUL box for div element contained an inline #text child, forcing all
+ its children to be wrapped in a block."
+ {file: "chrome://firestorageplus/content/panel.html" line: 0}]
+ */
+.storageValueLabel span {
+    display: inline-block;
+}
+
+.storageValueCol {
+    padding-left: 10px;
+}
+
+.storageInfoCol {
+    border-top: 1px solid #EEEEEE;
+    background: #FFFFFF linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent 33px) repeat-x;
+}
+
+.storageInfoBody {
+    margin: 10px 0 4px 10px;
+}
+
+.storageInfoTabs {
+    position: relative;
+    padding-left: 14px;
+}
+
+.storageInfoTab {
+    position: relative;
+    top: -3px;
+    margin-top: 10px;
+    padding: 4px 6px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    font-weight: bold;
+    color: #565656;
+}
+
+.storageInfoTab:hover {
+    cursor: pointer;
+}
+
+.storageInfoTab[selected="true"] {
+    cursor: default !important;
+    border-color: #D7D7D7;
+    -moz-border-radius: 4px 4px 0 0;
+    background-color: #FFFFFF;
+}
+
+.storageInfoText {
+    display: none;
+    margin: 0;
+    border: 1px solid #D7D7D7;
+    border-right: none;
+    padding: 8px;
+    background-color: #FFFFFF;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+.storageInfoText[selected="true"] {
+    display: block;
+}
+.storageInfoRow .storageRowHeader {
+    display: table-cell;
+}

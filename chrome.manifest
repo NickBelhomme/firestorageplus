@@ -1,0 +1,6 @@
+content  firestorageplus chrome/content/
+skin     firestorageplus classic/1.0   chrome/skin/classic/
+
+resource firestorageplus chrome/
+
+overlay		chrome://firebug/content/firebugOverlay.xul		chrome://firestorageplus/content/mainOverlay.xul
