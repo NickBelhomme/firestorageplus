@@ -1,6 +1,5 @@
 define(
     [
-        'firebug/lib/object',
         'firebug/lib/lib',
         'firebug/lib/trace',
         'firebug/lib/events',
@@ -9,7 +8,7 @@ define(
         'firebug/lib/string',
         'firebug/lib/options'
     ],
-    function(Object, FBL, FBTrace, Events, Dom, Css, String, Options) {
+    function(FBL, FBTrace, Events, Dom, Css, String, Options) {
         
         // ********************************************************************************************* //
         // Custom Panel Implementation
@@ -122,11 +121,20 @@ define(
                         {'class': 'storageInfoBody', _repObject: "$storage"},
                         DIV({'class': 'storageInfoTabs'},
                             A({'class': 'storageInfoValueTab storageInfoTab', 'onclick': '$onClickTab', 'view': 'Value'}, 'Value'),
-                            A({'class': 'storageInfoJsonTab storageInfoTab', 'onclick': '$onClickTab', 'view': 'Json'}, 'JSON')
+                            A({'class': 'storageInfoJsonTab storageInfoTab', 'onclick': '$onClickTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, 'JSON')
                         ),
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
                     ),
+                    hideJsonTab: function(storage)
+                    {
+                        try {
+                            var jsonObject = JSON.parse(storage.prettyValue);
+                            return Object.keys(jsonObject).length === 0;
+                        } catch (e) {
+                            return true;
+                        }
+                    },
                     onClickTab: function(event) {
                         this.selectTab(event.currentTarget);
                     },
@@ -170,11 +178,14 @@ define(
                             if (!storageInfoBody.jsonPresented)
                             {
                                 storageInfoBody.jsonPresented = true;
-
-                                var jsonObject = storage.getJsonValue();
-                                if (jsonObject) {
-                                    Firebug.DOMPanel.DirTable.tag.replace(
-                                        {object: jsonObject, toggles: this.toggles}, valueBox);
+                                try {
+                                    var jsonObject = JSON.parse(storage.prettyValue);
+                                    if (Object.keys(jsonObject).length > 0) {
+                                        Firebug.DOMPanel.DirTable.tag.replace(
+                                                {object: jsonObject, toggles: this.toggles}, valueBox);
+                                    }
+                                    return JSON.stringify(jsonObject, undefined, 2); // indentation level = 2
+                                } catch (e) {
                                 }
                             }
                         }
@@ -204,8 +215,8 @@ define(
                             var storageInfo = this.bodyTag.replace({storage: row.repObject}, bodyCol);
 
                             // If JSON tab is available select it by default.
-                            // if (this.selectTabByName(storageInfo, 'Json'))
-                            //    return;
+                             if (this.selectTabByName(storageInfo, 'Json'))
+                                return;
 
                             this.selectTabByName(storageInfo, 'Value');
                         }
