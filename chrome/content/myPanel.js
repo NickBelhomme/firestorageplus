@@ -158,9 +158,6 @@ define(
                         var tab = storageInfoBody.selectedTab;
                         if (Css.hasClass(tab, 'storageInfoValueTab')) {
                             var valueBox = Dom.getChildByClass(storageInfoBody, 'storageInfoValueText');
-                            Firebug.Console.log(storageInfoBody);
-                            Firebug.Console.log(storage);
-                            Firebug.Console.log(context);
                             if (!storageInfoBody.valuePresented)
                             {
                                 storageInfoBody.valuePresented = true;
