@@ -218,3 +218,7 @@
 .storageInfoRow .storageRowHeader {
     display: table-cell;
 }
+
+.DBG_FIRESTORAGEPLUS {
+    color: rgb(101, 0, 114);
+}

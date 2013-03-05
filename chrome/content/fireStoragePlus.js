@@ -1,25 +1,22 @@
 define(
     [
-        'firebug/lib/lib',
+        'firebug/lib/object',
         'firebug/lib/trace',
         'firebug/lib/events',
         'firebug/lib/dom',
         'firebug/lib/css',
         'firebug/lib/string',
-        'firebug/lib/options'
+        'firebug/lib/options',
+        "firebug/lib/domplate"
     ],
-    function(FBL, FBTrace, Events, Dom, Css, String, Options) {
+    function(Obj, FBTrace, Events, Dom, Css, String, Options, Domplate) {
         
-        // ********************************************************************************************* //
-        // Custom Panel Implementation
-        
-        var lastSortedColumn = 'storage.lastSortedColumn';
         var panelName = 'firestorageplus';
+        var lastSortedColumn = 'storage.lastSortedColumn';
         
+        Firebug.FireStoragePlus = function FireStoragePlus() {};
         
-        function MyPanel() {};
-        
-        MyPanel.prototype = FBL.extend(
+        Firebug.FireStoragePlus.prototype = Obj.extend(
             Firebug.Panel,
             {
                 name: panelName,
@@ -29,20 +26,14 @@ define(
                 // Initialization
             
                 initialize: function() {
+                    if (FBTrace.DBG_FIRESTORAGEPLUS) {
+                        FBTrace.sysout("firestorageplus; panel init");
+                    }
                     Firebug.Panel.initialize.apply(this, arguments);
-            
-                    if (FBTrace.DBG_FIRESTORAGEPLUS)
-                        FBTrace.sysout('fireStoragePlus; MyPanel.initialize');
-            
-                    // TODO: Panel initialization (there is one panel instance per browser tab)
-            
                     this.refresh();
                 },
             
                 destroy: function(state) {
-                    if (FBTrace.DBG_FIRESTORAGEPLUS)
-                        FBTrace.sysout('fireStoragePlus; MyPanel.destroy');
-            
                     Firebug.Panel.destroy.apply(this, arguments);
                 },
             
@@ -50,8 +41,6 @@ define(
                     Firebug.Panel.show.apply(this, arguments);
             
                     this.refresh();
-                    if (FBTrace.DBG_FIRESTORAGEPLUS)
-                        FBTrace.sysout('fireStoragePlus; MyPanel.show');
                 },
             
                 refresh: function() {
@@ -60,8 +49,8 @@ define(
             }
         );
         
-        with (FBL) {
-            MyPanel.prototype.MyTemplate = domplate(
+        with (Domplate) {
+            Firebug.FireStoragePlus.prototype.MyTemplate = domplate(
                 {
                     cleartag: DIV(''),
                     storageheadingtag: TABLE(
@@ -361,7 +350,7 @@ define(
         };
         
         
-        MyPanel.prototype.MyStorage = {
+        Firebug.FireStoragePlus.prototype.MyStorage = {
             getStorageItems: function (storage) {
                 var storageObject = this.getStorageObject(storage);
                 var items = []; 
@@ -435,13 +424,9 @@ define(
             }
         };
         
-        Firebug.registerPanel(MyPanel);
-        Firebug.registerStylesheet('resource://firestorageplus/skin/classic/firestorageplus.css');
+        Firebug.registerPanel(Firebug.FireStoragePlus);
+        Firebug.registerStylesheet("chrome://firestorageplus/skin/firestorageplus.css");
         
-        if (FBTrace.DBG_FIRESTORAGEPLUS) {
-            FBTrace.sysout('fireStoragePlus; myPanel.js, stylesheet registered');
-        }
-        
-        return MyPanel;
+        return Firebug.FireStoragePlus;
     }
 );
