@@ -52,7 +52,7 @@ define(
                             ),
                             TD({'class': 'storageValueCol storageCol'},
                                 DIV({'class': 'storageValueLabel storageLabel'}, 
-                                    SPAN('$item.croppedValue')
+                                    SPAN('$item|crop')
                                 )
                             ),
                             TD({'class': 'storageTypeCol storageCol'},
@@ -76,10 +76,21 @@ define(
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
                     ),
+                    prettify : function (value) {
+                        try {
+                            var jsonObject = JSON.parse(value);
+                            return JSON.stringify(jsonObject, undefined, 2); // indentation level = 2
+                        } catch (e) {
+                            return value;
+                        }
+                    },
+                    crop : function (storage) {
+                        return String.cropString(storage.value);
+                    },
                     hideJsonTab: function(storage)
                     {
                         try {
-                            var jsonObject = JSON.parse(storage.prettyValue);
+                            var jsonObject = JSON.parse(storage.value);
                             return Object.keys(jsonObject).length === 0;
                         } catch (e) {
                             return true;
@@ -119,7 +130,7 @@ define(
                             if (!storageInfoBody.valuePresented)
                             {
                                 storageInfoBody.valuePresented = true;
-                                var text = storage.prettyValue;
+                                var text = this.prettify(storage.value);
                                 if (text != undefined)
                                     String.insertWrappedText(text, valueBox);
                             }
@@ -129,7 +140,7 @@ define(
                             {
                                 storageInfoBody.jsonPresented = true;
                                 try {
-                                    var jsonObject = JSON.parse(storage.prettyValue);
+                                    var jsonObject = JSON.parse(storage.value);
                                     if (Object.keys(jsonObject).length > 0) {
                                         Firebug.DOMPanel.DirTable.tag.replace(
                                                 {object: jsonObject, toggles: this.toggles}, valueBox);
@@ -139,7 +150,15 @@ define(
                                 }
                             }
                         }
-                    },                    
+                    }, 
+                    hideRow: function(element) {
+                        if (Css.hasClass(element, 'storageRow')) {
+                            row = element;
+                        } else {
+                            row = Dom.getAncestorByClass(element, 'storageRow');
+                        }
+                        Css.setClass(row, 'collapsed');
+                    },
                     onClickRow: function(event) {
                             if (!Events.isLeftClick(event))
                                 return;
@@ -309,6 +328,7 @@ define(
                 }
             );
         }
+        
         return FireStoragePlusDomplate;
     }
 );

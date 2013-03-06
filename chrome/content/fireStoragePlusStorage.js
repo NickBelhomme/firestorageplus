@@ -1,22 +1,17 @@
 define(
     [
         'firebug/lib/trace',
-        'firebug/lib/string'
+        'firestorageplus/fireStoragePlusStorageItem'
     ],
-    function(FBTrace, String) {
-        var fireStoragePlusStorage = {
+    function(FBTrace, FireStoragePlusStorageItem) {
+        var FireStoragePlusStorage = {
             getStorageItems: function (storage) {
                 var storageObject = this.getStorageObject(storage);
-                var items = []; 
+                var items = [];
+                var item;
                 for (var name in storageObject) {
-                    items.push(
-                        {
-                            key: name, 
-                            croppedValue: String.cropString(storageObject[name]),
-                            prettyValue: this.pretty(storageObject[name]),
-                            type: storage
-                        }
-                    );
+                    item = new FireStoragePlusStorageItem(name, storageObject[name], storage);
+                    items.push(item);
                 }
                 return items;
             },
@@ -68,16 +63,21 @@ define(
                 }
                 return object;
             },
-            pretty: function (value) {
-                try {
-                    var jsonObject = JSON.parse(value);
-                    return JSON.stringify(jsonObject, undefined, 2); // indentation level = 2
-                } catch (e) {
-                    return value;
-                }
+            remove : function(storage) {
+                var context = Firebug.currentContext;
+                Firebug.CommandLine.evaluate(
+                    '(' + storage.type  +'.removeItem("' + storage.key + '"))',
+                    context,
+                    null, null,
+                    function(result) {
+                    },
+                    function() {
+                    },
+                    true
+                );
             }
         };
         
-        return fireStoragePlusStorage;
+        return FireStoragePlusStorage;
     }
 );
