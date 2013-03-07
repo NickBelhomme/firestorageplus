@@ -80,20 +80,8 @@ define(
                     FireStoragePlusStorage.remove(storage);
                     FireStoragePlusDomplate.hideRow(element);
                 },
-                onEdit: function(cookie) {
-                    var params = {
-                        cookie: cookie.cookie,
-                        action: "edit",
-                        window: null,
-                        EditCookie: EditCookie,
-                        Firebug: Firebug,
-                        FBTrace: FBTrace,
-                    };
-
-                    var parent = Firebug.currentContext.chrome.window;
-                    return parent.openDialog("chrome://firebug/content/cookies/editCookie.xul",
-                        "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
-                        params);
+                onEdit: function(storage) {
+                   
                 }
             }
         );
