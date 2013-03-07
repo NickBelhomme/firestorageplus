@@ -28,6 +28,19 @@ define(
                         FBTrace.sysout("storages.storageClipboard.copyTo; EXCEPTION " + err, err);
                 }
             },
+            getFrom: function()
+            {
+                try
+                {
+                    var str = this.getTransferData();
+                    return JSON.parse(str);
+                }
+                catch (err)
+                {
+                }
+
+                return null;
+            },
             isStorageAvailable: function()
             {
                 try
@@ -69,7 +82,7 @@ define(
                 if (typeof(trans.init) == "function")
                     trans.init(null);
         
-                var json = storage.toJSONObject();
+                var json = storage.toJSON();
                 var wrapper1 = Xpcom.CCIN("@mozilla.org/supports-string;1", "nsISupportsString");
                 wrapper1.data = json;
                 trans.addDataFlavor(this.storageFlavour);
@@ -100,13 +113,14 @@ define(
         
                 trans.addDataFlavor(this.storageFlavour);
         
+                
                 clipboard.getData(trans, Ci.nsIClipboard.kGlobalClipboard);
         
                 var str = new Object();
                 var strLength = new Object();
         
                 trans.getTransferData(this.storageFlavour, str, strLength);
-        
+
                 if (!str.value) 
                     return null;
         

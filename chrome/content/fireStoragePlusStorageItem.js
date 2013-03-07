@@ -15,7 +15,7 @@ define(
                 return this.key + '=' + this.value + '; type=' + this.type;
             },
             toJSON : function() {
-                return JSON.stringify({'name':this.key, 'value':this.value, 'type':this.type});
+                return JSON.stringify({'key':this.key, 'value':this.value, 'type':this.type});
             },
             toJSONObject : function() {
                 return JSON.parse(this.toJSON());

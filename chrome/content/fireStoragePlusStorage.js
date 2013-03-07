@@ -75,6 +75,32 @@ define(
                     },
                     true
                 );
+            },
+            add : function (storage) {
+                var context = Firebug.currentContext;
+                Firebug.CommandLine.evaluate(
+                    '((' + this.addStorage + ')(' + storage.type + ', "' + storage.key + '", "' + escape(storage.value) + '"))',
+                    context,
+                    null, null,
+                    function(result) {
+                    },
+                    function() {
+                    },
+                    true
+                );                
+            },
+            addStorage : function (storage, key, value) {
+                var counter = 0;
+                var newKey = key;
+                while(null !== storage.getItem(newKey)) {
+                    counter++;
+                    newKey  = key + '_' + counter;
+                }
+                if (counter !== 0) {
+                    key = newKey;
+                }
+                
+                storage.setItem(key, unescape(value));
             }
         };
         

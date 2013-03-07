@@ -71,30 +71,10 @@ define(
                 },
                 onPaste: function(clickedStorage)  {
                     var context = Firebug.currentContext;
-                    var values = CookieClipboard.getFrom();
+                    var values = FireStoragePlusClipboard.getFrom();
                     if (!values || !context)
                         return;
-
-                    if (FBTrace.DBG_COOKIES)
-                        FBTrace.sysout("cookies.Get cookie values from clipboard", values);
-
-                    // Change name so it's unique and use the current host.
-                    values.name = Firebug.CookieModule.getDefaultCookieName(context, values.name);
-                    values.host = context.browser.currentURI.host;
-
-                    values.rawValue = values.value;
-                    values.value = unescape(values.value);
-
-                    // If the expire time isn't set use the default value.
-                    if (values.expires == undefined)
-                        values.expires = Firebug.CookieModule.getDefaultCookieExpireTime();
-
-                    // Create/modify cookie.
-                    var cookie = new Cookie(values);
-                    Firebug.CookieModule.createCookie(cookie);
-
-                    if (FBTrace.DBG_COOKIES)
-                        checkList(context.getPanel(panelName, true));
+                    FireStoragePlusStorage.add(values);
                 },
                 onRemove: function(element, storage) {
                     FireStoragePlusStorage.remove(storage);
