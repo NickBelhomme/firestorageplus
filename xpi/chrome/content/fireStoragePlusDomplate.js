@@ -13,7 +13,6 @@ define(
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
                 {
-                    cleartag: DIV(''),
                     storageheadingtag: TABLE(
                         {'class': 'storageTable', 'cellpadding': 0, 'cellspacing': 0, 'hiddenCols': ''},
                         TBODY(
@@ -312,7 +311,7 @@ define(
                         this.renderStorage(panel, 'sessionStorage', table.lastChild);
                     },
                     clear: function(panel) {
-                        this.cleartag.replace({}, panel.panelNode);
+                        Dom.clearNode(panel.panelNode);
                     },
                     renderStorage: function(panel, storage, table) {
                         var items = FireStoragePlusStorage.getStorageItems(storage);
