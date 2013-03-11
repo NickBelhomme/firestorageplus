@@ -82,12 +82,14 @@ define(
                     '((' + this.addStorage + ')(' + storage.type + ', "' + storage.key + '", "' + escape(storage.value) + '"))',
                     context,
                     null, null,
-                    function(result) {
+                    function(key) {
+                        storage.key = key;
                     },
                     function() {
                     },
                     true
                 );                
+                return storage;
             },
             addStorage : function (storage, key, value) {
                 var counter = 0;
@@ -101,6 +103,7 @@ define(
                 }
                 
                 storage.setItem(key, unescape(value));
+                return key;
             }
         };
         

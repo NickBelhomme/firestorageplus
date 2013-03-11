@@ -34,12 +34,10 @@ define(
             
                 show: function(state) {
                     Firebug.Panel.show.apply(this, arguments);
-            
-                    this.refresh();
+                    FireStoragePlusDomplate.render(this);
                 },
             
                 refresh: function() {
-                    FireStoragePlusDomplate.render(this);
                 },
                 
                 getContextMenuItems: function(storage, target, context) {
@@ -74,7 +72,8 @@ define(
                     var values = FireStoragePlusClipboard.getFrom();
                     if (!values || !context)
                         return;
-                    FireStoragePlusStorage.add(values);
+                    var storage = FireStoragePlusStorage.add(values);
+                    FireStoragePlusDomplate.insertStorageRow(storage);
                 },
                 onRemove: function(element, storage) {
                     FireStoragePlusStorage.remove(storage);

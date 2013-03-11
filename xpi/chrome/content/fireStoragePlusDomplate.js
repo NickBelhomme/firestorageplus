@@ -10,6 +10,7 @@ define(
     ],
     function(Events, Dom, Css, String, Options, Domplate, FireStoragePlusStorage) {
         var lastSortedColumn = 'storage.lastSortedColumn';
+        var storageTable = null;
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
                 {
@@ -156,7 +157,15 @@ define(
                         } else {
                             row = Dom.getAncestorByClass(element, 'storageRow');
                         }
-                        Css.setClass(row, 'collapsed');
+                        this.clear(row);
+                    },
+                    insertStorageRow : function (storage) {
+                        this.storageitemtag.insertRows(
+                            {
+                                array: [storage]
+                            }, 
+                            storageTable
+                        ); 
                     },
                     onClickRow: function(event) {
                             if (!Events.isLeftClick(event))
@@ -305,13 +314,13 @@ define(
                         Options.set(lastSortedColumn, prefValue);
                     },                        
                     render: function(panel) {
-                        this.clear(panel);
-                        var table = this.storageheadingtag.append({}, panel.panelNode);
-                        this.renderStorage(panel, 'localStorage', table.lastChild);
-                        this.renderStorage(panel, 'sessionStorage', table.lastChild);
+                        this.clear(panel.panelNode);
+                        storageTable = this.storageheadingtag.append({}, panel.panelNode);
+                        this.renderStorage(panel, 'localStorage', storageTable.lastChild);
+                        this.renderStorage(panel, 'sessionStorage', storageTable.lastChild);
                     },
-                    clear: function(panel) {
-                        Dom.clearNode(panel.panelNode);
+                    clear: function(element) {
+                        Dom.clearNode(element);
                     },
                     renderStorage: function(panel, storage, table) {
                         var items = FireStoragePlusStorage.getStorageItems(storage);
