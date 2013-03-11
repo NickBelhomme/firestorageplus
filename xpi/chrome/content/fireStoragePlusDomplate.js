@@ -151,7 +151,7 @@ define(
                             }
                         }
                     }, 
-                    hideRow: function(element) {
+                    removeStorageRow: function(element) {
                         if (Css.hasClass(element, 'storageRow')) {
                             row = element;
                         } else {

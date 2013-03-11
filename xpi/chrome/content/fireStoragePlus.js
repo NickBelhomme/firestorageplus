@@ -77,7 +77,7 @@ define(
                 },
                 onRemove: function(element, storage) {
                     FireStoragePlusStorage.remove(storage);
-                    FireStoragePlusDomplate.hideRow(element);
+                    FireStoragePlusDomplate.removeStorageRow(element);
                 },
                 onEdit: function(storage) {
                    
