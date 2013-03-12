@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!-- See license.txt for terms of usage -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog id="fspEditStorageDlg"
+        windowtype="Browser:StorageEditor"
+        title="FireStorage Plus! storage editor"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        ondialogaccept="return FireStoragePlusEdit.onOk()"
+        onload="return FireStoragePlusEdit.onLoad()"
+        minwidth="360px"
+        minheight="300px"
+        persist="width height screenX screenY">
+
+    <script type="application/x-javascript">
+    var args = window.arguments[0];
+    FireStoragePlusEdit = new args.FireStoragePlusEdit(window);
+    Firebug = args.Firebug;
+    </script>
+
+    <grid flex="1">
+        <columns>
+            <column/>
+            <column flex="1"/>
+        </columns>
+        <rows>
+            <row align="center">
+                <vbox align="end">
+                    <label id="fspKeyLabel" value="Key"/>
+                </vbox>
+                <textbox id="fspKey"/>
+            </row>
+            <row flex="1">
+                <vbox align="end">
+                    <label id="fspValueLabel" value="Value"/>
+                </vbox>
+                <textbox id="fspValue" flex="1" multiline="true" rows="3"/>
+            </row>
+            <row flex="1">
+                <vbox align="end">
+                    <label id="fspStorageLabel" value="Storage"/>
+                </vbox>
+                <radiogroup id="fspstorageType">
+                    <radio id="fspLocal" label="localStorage"/>
+                    <radio id="fspSession" label="sessionStorage"/>
+                </radiogroup>
+            </row>
+        </rows>
+    </grid>
+    <separator class="groove"/>
+</dialog>

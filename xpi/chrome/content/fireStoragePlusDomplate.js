@@ -21,10 +21,10 @@ define(
                                 TD({id: 'storageBreakpointBar', 'width': '1%', 'class': 'storageHeaderCell'},
                                     '&nbsp;'
                                 ),
-                                TD({id: 'colName', role: 'columnheader',
+                                TD({id: 'colKey', role: 'columnheader',
                                     'class': 'storageHeaderCell alphaValue a11yFocus'},
                                     DIV({'class': 'storageHeaderCellBox'},
-                                    'Name')
+                                    'Key')
                                 ),
                                 TD({id: 'colValue', role: 'columnheader',
                                     'class': 'storageHeaderCell alphaValue a11yFocus'},
@@ -47,8 +47,8 @@ define(
                                     '&nbsp;'
                                )
                             ),
-                            TD({'class': 'storageNameCol storageCol'},
-                                DIV({'class': 'storageNameLabel storageLabel', 'onclick': '$onClickRow'}, '$item.key')
+                            TD({'class': 'storageKeyCol storageCol'},
+                                DIV({'class': 'storageKeyLabel storageLabel', 'onclick': '$onClickRow'}, '$item.key')
                             ),
                             TD({'class': 'storageValueCol storageCol'},
                                 DIV({'class': 'storageValueLabel storageLabel'}, 
@@ -152,20 +152,28 @@ define(
                         }
                     }, 
                     removeStorageRow: function(element) {
-                        if (Css.hasClass(element, 'storageRow')) {
-                            row = element;
+                        this.clear(this.getStorageRowFromNode(element));
+                    },
+                    getStorageRowFromNode : function (node) {
+                        if (Css.hasClass(node, 'storageRow')) {
+                            return node;
                         } else {
-                            row = Dom.getAncestorByClass(element, 'storageRow');
+                            return Dom.getAncestorByClass(node, 'storageRow');
                         }
-                        this.clear(row);
+                    },
+                    replaceStorageRow : function (storage, element) {
+                        var storageRow = this.getStorageRowFromNode(element);
+                        var newStorageRow = this.insertStorageRow(storage);
+                        Dom.insertAfter(newStorageRow, storageRow);
+                        this.removeStorageRow(storageRow);
                     },
                     insertStorageRow : function (storage) {
-                        this.storageitemtag.insertRows(
+                        return this.storageitemtag.insertRows(
                             {
                                 array: [storage]
                             }, 
                             storageTable
-                        ); 
+                        )[0]; 
                     },
                     onClickRow: function(event) {
                             if (!Events.isLeftClick(event))

@@ -4,9 +4,10 @@ define(
         'firebug/lib/trace',
         "firestorageplus/fireStoragePlusDomplate",
         "firestorageplus/fireStoragePlusClipboard",
-        "firestorageplus/fireStoragePlusStorage"
+        "firestorageplus/fireStoragePlusStorage",
+        "firestorageplus/fireStoragePlusEdit"
     ],
-    function(Obj, FBTrace, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage) {
+    function(Obj, FBTrace, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
         var panelName = 'firestorageplus';
         
         Firebug.FireStoragePlus = function FireStoragePlus() {};
@@ -60,7 +61,7 @@ define(
                     items.push("-");
                     items.push({
                       label: "Edit",
-                      command: Obj.bindFixed(this.onEdit, this, storage)
+                      command: Obj.bindFixed(this.onEdit, this, target, storage)
                     });
                     return items;
                 },
@@ -79,9 +80,21 @@ define(
                     FireStoragePlusStorage.remove(storage);
                     FireStoragePlusDomplate.removeStorageRow(element);
                 },
-                onEdit: function(storage) {
-                   
-                }
+                onEdit: function(element, storage) {
+                    var params = {
+                            storage: storage,
+                            action: "edit",
+                            window: null,
+                            FireStoragePlusEdit: FireStoragePlusEdit,
+                            storageRow: element,
+                            Firebug: Firebug,
+                            FBTrace: FBTrace,
+                        };
+                    var parent = Firebug.currentContext.chrome.window;
+                    return parent.openDialog("chrome://firestorageplus/content/fireStoragePlusEdit.xul",
+                        "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
+                        params);
+                },
             }
         );
         

@@ -62,13 +62,13 @@
 
 /*
  * Every row is for one column, the first selector hides column in the header
- * (e.g. id=colName) and the second selector in all rows (e.g. class=storageNameCol)
+ * (e.g. id=colKey) and the second selector in all rows (e.g. class=storageKeyCol)
  * 
  * If a column is hidden, it's presented in a 'hiddenCols' attribute of the .storageTable
  * element. Value of the attribute is a whitespace separated list of columns IDs.
  */
-.storageTable[hiddenCols~=colName] #colName,
-.storageTable[hiddenCols~=colName] .storageNameCol,
+.storageTable[hiddenCols~=colKey] #colKey,
+.storageTable[hiddenCols~=colKey] .storageKeyCol,
 .storageTable[hiddenCols~=colValue] #colValue,
 .storageTable[hiddenCols~=colValue] .storageValueCol {
     display: none;
@@ -86,11 +86,11 @@
     background-position: 5px 1px;
 }
 
-#colName > .storageHeaderCellBox {
+#colKey > .storageHeaderCellBox {
     border-left: 0px;
 }
 
-.storageNameLabel:hover {
+.storageKeyLabel:hover {
     cursor: pointer;
     color: blue;
     text-decoration: underline;
@@ -111,7 +111,7 @@
     white-space: nowrap;
 }
 
-.storageNameLabel {
+.storageKeyLabel {
     -moz-box-sizing: padding-box;
     overflow: hidden;
     padding-top: 1px;
@@ -120,18 +120,18 @@
     margin-left: 5px;
 }
 
-.storageNameCol > .storageNameLabel {
+.storageKeyCol > .storageKeyLabel {
     padding-left: 18px;
 }
 
-.storageRow > .storageNameCol > .storageNameLabel {
+.storageRow > .storageKeyCol > .storageKeyLabel {
     background-image: url(chrome://firestorageplus/skin/twistyClosed.png);
     background-repeat: no-repeat;
     background-position: 2px 2px;
     min-height: 12px;
 }
 
-.storageRow.opened > .storageNameCol > .storageNameLabel {
+.storageRow.opened > .storageKeyCol > .storageKeyLabel {
     background-image: url(chrome://firestorageplus/skin/twistyOpen.png);
 }
 

@@ -9,8 +9,8 @@ define(
                 var storageObject = this.getStorageObject(storage);
                 var items = [];
                 var item;
-                for (var name in storageObject) {
-                    item = new FireStoragePlusStorageItem(name, storageObject[name], storage);
+                for (var key in storageObject) {
+                    item = new FireStoragePlusStorageItem(key, storageObject[key], storage);
                     items.push(item);
                 }
                 return items;
@@ -52,9 +52,9 @@ define(
                 var object = {};
                 try
                 {
-                    for (var name in storage)
+                    for (var key in storage)
                     {
-                        object[name] =  storage.getItem(name);
+                        object[key] =  storage.getItem(key);
                     }
                 }
                 catch(e)
