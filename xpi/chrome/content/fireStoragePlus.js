@@ -68,6 +68,11 @@ define(
                         label: "Create",
                         command: Obj.bindFixed(this.onCreate, this)
                     });
+                    items.push("-");
+                    items.push({
+                        label: "About",
+                        command: Obj.bindFixed(this.onAbout, this)
+                    });
                     return items;
                 },
                 onCopy: function(clickedStorage) {
@@ -112,6 +117,15 @@ define(
                     return parent.openDialog("chrome://firestorageplus/content/fireStoragePlusEdit.xul",
                             "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
                             params);
+                },
+                onAbout: function() {
+                    Components.utils["import"]("resource://gre/modules/AddonManager.jsm");
+
+                    AddonManager.getAddonByID("firestorageplus@nickbelhomme.com", function(addon)
+                    {
+                        openDialog("chrome://mozapps/content/extensions/about.xul", "",
+                        "chrome,centerscreen,modal", addon);
+                    });
                 },
             }
         );
