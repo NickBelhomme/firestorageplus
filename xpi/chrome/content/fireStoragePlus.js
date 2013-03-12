@@ -63,12 +63,17 @@ define(
                       label: "Edit",
                       command: Obj.bindFixed(this.onEdit, this, target, storage)
                     });
+                    items.push("-");
+                    items.push({
+                        label: "Create",
+                        command: Obj.bindFixed(this.onCreate, this)
+                    });
                     return items;
                 },
                 onCopy: function(clickedStorage) {
                     FireStoragePlusClipboard.copyTo(clickedStorage);
                 },
-                onPaste: function(clickedStorage)  {
+                onPaste: function()  {
                     var context = Firebug.currentContext;
                     var values = FireStoragePlusClipboard.getFrom();
                     if (!values || !context)
@@ -94,6 +99,19 @@ define(
                     return parent.openDialog("chrome://firestorageplus/content/fireStoragePlusEdit.xul",
                         "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
                         params);
+                },
+                onCreate: function() {
+                    var params = {
+                            action: "create",
+                            window: null,
+                            FireStoragePlusEdit: FireStoragePlusEdit,
+                            Firebug: Firebug,
+                            FBTrace: FBTrace,
+                    };
+                    var parent = Firebug.currentContext.chrome.window;
+                    return parent.openDialog("chrome://firestorageplus/content/fireStoragePlusEdit.xul",
+                            "_blank", "chrome,centerscreen,resizable=yes,modal=yes",
+                            params);
                 },
             }
         );

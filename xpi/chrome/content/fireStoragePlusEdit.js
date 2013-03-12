@@ -17,6 +17,7 @@ define(
     {
         storage: null,
         storageRow: null,
+        action: null,
         
         onLoad: function()
         {
@@ -24,6 +25,7 @@ define(
             this.params = params;
             this.storage = params.storage;
             this.storageRow = params.storageRow;
+            this.action = params.action;
     
             this.keyNode = this.getNode("fspKey");
             this.valueNode = this.getNode("fspValue");
@@ -31,11 +33,13 @@ define(
             this.localStorageNode = this.getNode("fspLocal");
             this.sessionStorageNode = this.getNode("fspSession");
     
-            this.keyNode.value = unescape(this.storage.key);
-            this.valueNode.value = unescape(this.storage.value);
-    
-            if (this.storage.type === 'sessionStorage') {
-                this.storageTypeNode.selectedIndex = 1;
+            if (this.action === 'edit') {
+                this.keyNode.value = unescape(this.storage.key);
+                this.valueNode.value = unescape(this.storage.value);
+        
+                if (this.storage.type === 'sessionStorage') {
+                    this.storageTypeNode.selectedIndex = 1;
+                }
             }
         },
     
