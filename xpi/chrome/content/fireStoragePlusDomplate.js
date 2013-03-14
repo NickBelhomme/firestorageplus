@@ -22,18 +22,18 @@ define(
                                     '&nbsp;'
                                 ),
                                 TD({id: 'colKey', role: 'columnheader',
-                                    'class': 'storageHeaderCell alphaValue a11yFocus'},
+                                    'class': 'storageHeaderCell alphaValue'},
                                     DIV({'class': 'storageHeaderCellBox'},
                                     'Key')
                                 ),
                                 TD({id: 'colValue', role: 'columnheader',
-                                    'class': 'storageHeaderCell alphaValue a11yFocus'},
-                                    DIV({'class': 'storageHeaderCellBox'}, 
+                                    'class': 'storageHeaderCell alphaValue'},
+                                    DIV({'class': 'storageHeaderCellBox'},
                                     'Value')
                                 ),
                                 TD({id: 'colType', role: 'columnheader',
-                                    'class': 'storageHeaderCell alphaValue a11yFocus'},
-                                    DIV({'class': 'storageHeaderCellBox'}, 
+                                    'class': 'storageHeaderCell alphaValue'},
+                                    DIV({'class': 'storageHeaderCellBox'},
                                     'Type')
                                 )
                             )
@@ -51,16 +51,16 @@ define(
                                 DIV({'class': 'storageKeyLabel storageLabel'}, '$item.key')
                             ),
                             TD({'class': 'storageValueCol storageCol'},
-                                DIV({'class': 'storageValueLabel storageLabel'}, 
+                                DIV({'class': 'storageValueLabel storageLabel'},
                                     SPAN('$item|crop')
                                 )
                             ),
                             TD({'class': 'storageTypeCol storageCol'},
-                                DIV({'class': 'storageTypeLabel storageLabel'}, 
+                                DIV({'class': 'storageTypeLabel storageLabel'},
                                     SPAN('$item.type')
                                 )
                             )
-                        ) 
+                        )
                     ),
                     bodyRow: TR(
                         {'class': 'storageInfoRow'},
@@ -101,26 +101,26 @@ define(
                     },
                     selectTab: function(tab) {
                         var storageInfoBody = tab.parentNode.parentNode;
-    
+
                         var view = tab.getAttribute('view');
                         if (storageInfoBody.selectedTab)
                         {
                             storageInfoBody.selectedTab.removeAttribute('selected');
                             storageInfoBody.selectedText.removeAttribute('selected');
                         }
-    
+
                         var textBodyName = 'storageInfo' + view + 'Text';
-    
+
                         storageInfoBody.selectedTab = tab;
                         storageInfoBody.selectedText = storageInfoBody.getElementsByClassName(textBodyName).item(0);
-    
+
                         storageInfoBody.selectedTab.setAttribute('selected', 'true');
                         storageInfoBody.selectedText.setAttribute('selected', 'true');
-    
+
                         var storage = Firebug.getRepObject(storageInfoBody);
                         var context = Firebug.getElementPanel(storageInfoBody).context;
                         this.updateInfo(storageInfoBody, storage, context);
-    
+
                         return true;
                     },
                     updateInfo: function(storageInfoBody, storage, context) {
@@ -150,7 +150,7 @@ define(
                                 }
                             }
                         }
-                    }, 
+                    },
                     removeStorageRow: function(element) {
                         this.clear(this.getStorageRowFromNode(element));
                     },
@@ -171,7 +171,7 @@ define(
                         var row = this.storageitemtag.insertRows(
                             {
                                 array: [storage]
-                            }, 
+                            },
                             storageTable.lastChild
                         )[0];
                         row.addEventListener('click', this.onClickRow.bind(this));
@@ -189,19 +189,19 @@ define(
                         var opened = Css.hasClass(row, 'opened');
                         if (opened && forceOpen)
                             return;
-    
+
                         Css.toggleClass(row, 'opened');
-    
+
                         if (Css.hasClass(row, 'opened'))
                         {
                             var bodyRow = this.bodyRow.insertRows({}, row)[0];
                             var bodyCol = bodyRow.getElementsByClassName('storageInfoCol').item(0);
                             var storageInfo = this.insertBodyTag(row.repObject, bodyCol);
-                            
+
                             // If JSON tab is available select it by default.
                              if (this.selectTabByName(storageInfo, 'Json'))
                                 return;
-    
+
                             this.selectTabByName(storageInfo, 'Value');
                         }
                         else
@@ -221,13 +221,13 @@ define(
                     {
                         var tab = Dom.getChildByClass(storageInfoBody, "storageInfoTabs",
                             "storageInfo" + tabName + "Tab");
-    
-                        // Don't select collapsed tabs. 
+
+                        // Don't select collapsed tabs.
                         if (tab && !Css.hasClass(tab, "collapsed"))
                             return this.selectTab(tab);
-    
+
                         return false;
-                    },                    
+                    },
                     onClickHeader: function(event) {
                         var table = Dom.getAncestorByClass(event.target, 'storageTable');
                         var column = Dom.getAncestorByClass(event.target, 'storageHeaderCell');
@@ -236,49 +236,49 @@ define(
                     sortColumn: function(table, col, direction) {
                         if (!col)
                             return;
-    
+
                         if (typeof(col) == 'string')
                         {
                             var doc = table.ownerDocument;
                             col = doc.getElementById(col);
                         }
-    
+
                         if (!col)
                             return;
-    
+
                         var numerical = !Css.hasClass(col, 'alphaValue');
-    
+
                         var colIndex = 0;
                         for (col = col.previousSibling; col; col = col.previousSibling) {
                             ++colIndex;
                         }
-    
+
                         this.sort(table, colIndex, numerical, direction);
                     },
                     sort: function(table, colIndex, numerical, direction) {
                         var tbody = table.lastChild;
-                        
+
                         var headerRow = tbody.firstChild;
-    
+
                         // Remove class from the currently sorted column
                         var headerSorted = headerRow.getElementsByClassName('storageHeaderSorted').item(0);
                         Css.removeClass(headerSorted, 'storageHeaderSorted');
-    
+
                         // Mark new column as sorted.
                         var header = headerRow.childNodes[colIndex];
                         Css.setClass(header, 'storageHeaderSorted');
-    
+
                         // If the column is already using required sort direction, bubble out.
                         if ((direction == 'desc' && header.sorted == 1) ||
                             (direction == 'asc' && header.sorted == -1))
                             return;
-    
+
                         var values = [];
                         for (var row = tbody.childNodes[1]; row; row = row.nextSibling)
                         {
                             var cell = row.childNodes[colIndex];
                             var value = numerical ? parseFloat(cell.textContent) : cell.textContent;
-    
+
                             if (Css.hasClass(row, 'opened'))
                             {
                                 var storageInfoRow = row.nextSibling;
@@ -290,16 +290,16 @@ define(
                                 values.push({row: row, value: value});
                             }
                         }
-    
+
                         values.sort(function(a, b) { return a.value < b.value ? -1 : 1; });
-    
+
                         if ((header.sorted && header.sorted == 1) || (!header.sorted && direction == 'asc'))
                         {
                             Css.removeClass(header, 'sortedDescending');
                             Css.setClass(header, 'sortedAscending');
-    
+
                             header.sorted = -1;
-    
+
                             for (var i = 0; i < values.length; ++i)
                             {
                                 tbody.appendChild(values[i].row);
@@ -311,9 +311,9 @@ define(
                         {
                             Css.removeClass(header, 'sortedAscending');
                             Css.setClass(header, 'sortedDescending');
-    
+
                             header.sorted = 1;
-    
+
                             for (var i = values.length-1; i >= 0; --i)
                             {
                                 tbody.appendChild(values[i].row);
@@ -321,11 +321,11 @@ define(
                                     tbody.appendChild(values[i].info);
                             }
                         }
-    
+
                         // Remember last sorted column & direction in preferences.
                         var prefValue = header.getAttribute('id') + ' ' + (header.sorted > 0 ? 'desc' : 'asc');
                         Options.set(lastSortedColumn, prefValue);
-                    },                        
+                    },
                     render: function(panel) {
                         this.clear(panel.panelNode);
                         storageTable = this.renderStorageHeading(panel.panelNode);
@@ -347,19 +347,19 @@ define(
                         var i, imax;
                         var items = FireStoragePlusStorage.getStorageItems(storage);
                         imax = items.length;
-                        
+
                         if (imax > 0) {
                             for (i = 0, imax = items.length; i < imax; i++) {
                                 this.insertStorageRow(
                                     items[i]
-                                );        
+                                );
                             }
-                        }                                
+                        }
                     }
                 }
             );
         }
-        
+
         return FireStoragePlusDomplate;
     }
 );

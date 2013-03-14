@@ -24,7 +24,7 @@ define(
                     {
                         if (names[i] !== storage)
                             continue;
-                       
+
                         Firebug.CommandLine.evaluate(
                             '((' + this.makeObject + ')(' + names[i] + '))',
                             context,
@@ -88,7 +88,7 @@ define(
                     function() {
                     },
                     true
-                );                
+                );
                 return storage;
             },
             addStorage : function (storage, key, value) {
@@ -101,12 +101,12 @@ define(
                 if (counter !== 0) {
                     key = newKey;
                 }
-                
+
                 storage.setItem(key, unescape(value));
                 return key;
             }
         };
-        
+
         return FireStoragePlusStorage;
     }
 );

@@ -9,18 +9,18 @@ define(
     ],
     function(Obj, FBTrace, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
         var panelName = 'firestorageplus';
-        
+
         Firebug.FireStoragePlus = function FireStoragePlus() {};
-        
+
         Firebug.FireStoragePlus.prototype = Obj.extend(
             Firebug.Panel,
             {
                 name: panelName,
                 title: 'FireStorage Plus!',
-            
+
                 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
                 // Initialization
-            
+
                 initialize: function() {
                     if (FBTrace.DBG_FIRESTORAGEPLUS) {
                         FBTrace.sysout("firestorageplus; panel init");
@@ -28,19 +28,19 @@ define(
                     Firebug.Panel.initialize.apply(this, arguments);
                     this.refresh();
                 },
-            
+
                 destroy: function(state) {
                     Firebug.Panel.destroy.apply(this, arguments);
                 },
-            
+
                 show: function(state) {
                     Firebug.Panel.show.apply(this, arguments);
                     FireStoragePlusDomplate.render(this);
                 },
-            
+
                 refresh: function() {
                 },
-                
+
                 getContextMenuItems: function(storage, target, context) {
                     var items = [];
                     items.push({
@@ -129,10 +129,10 @@ define(
                 },
             }
         );
-        
+
         Firebug.registerPanel(Firebug.FireStoragePlus);
         Firebug.registerStylesheet("chrome://firestorageplus/skin/firestorageplus.css");
-        
+
         return Firebug.FireStoragePlus;
     }
 );
