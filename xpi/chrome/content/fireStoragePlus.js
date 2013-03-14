@@ -2,12 +2,13 @@ define(
     [
         'firebug/lib/object',
         'firebug/lib/trace',
+        'firebug/lib/dom',
         "firestorageplus/fireStoragePlusDomplate",
         "firestorageplus/fireStoragePlusClipboard",
         "firestorageplus/fireStoragePlusStorage",
         "firestorageplus/fireStoragePlusEdit"
     ],
-    function(Obj, FBTrace, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
+    function(Obj, FBTrace, Dom, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
         var panelName = 'firestorageplus';
 
         Firebug.FireStoragePlus = function FireStoragePlus() {};
@@ -43,6 +44,10 @@ define(
 
                 getContextMenuItems: function(storage, target, context) {
                     var items = [];
+                    if (Dom.getAncestorByClass(target, "storageHeaderRow")) {
+                        return items;
+                    }
+                    
                     items.push({
                       label: "Copy",
                       command: Obj.bindFixed(this.onCopy, this, storage)
