@@ -152,7 +152,11 @@ define(
                         }
                     },
                     removeStorageRow: function(element) {
-                        this.clear(this.getStorageRowFromNode(element));
+                        var row = this.getStorageRowFromNode(element);
+                        if (Css.hasClass(row.nextSibling, 'storageInfoRow')) {
+                            this.clear(row.nextSibling);
+                        }
+                        this.clear(row);
                     },
                     getStorageRowFromNode : function (node) {
                         if (Css.hasClass(node, 'storageRow')) {
@@ -164,8 +168,8 @@ define(
                     replaceStorageRow : function (storage, element) {
                         var storageRow = this.getStorageRowFromNode(element);
                         var newStorageRow = this.insertStorageRow(storage);
-                        Dom.insertAfter(newStorageRow, storageRow);
                         this.removeStorageRow(storageRow);
+                        Dom.insertAfter(newStorageRow, storageRow);
                     },
                     insertStorageRow : function (storage) {
                         var row = this.storageitemtag.insertRows(
