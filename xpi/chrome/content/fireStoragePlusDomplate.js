@@ -17,7 +17,7 @@ define(
                     storageheadingtag: TABLE(
                         {'class': 'storageTable', 'cellpadding': 0, 'cellspacing': 0, 'hiddenCols': ''},
                         TBODY(
-                            TR({'class': 'storageHeaderRow', 'onclick': '$onClickHeader'},
+                            TR({'class': 'storageHeaderRow'},
                                 TD({id: 'storageBreakpointBar', 'width': '1%', 'class': 'storageHeaderCell'},
                                     '&nbsp;'
                                 ),
@@ -41,14 +41,14 @@ define(
                     ),
                     storageitemtag: FOR(
                         'item', '$array',
-                        TR({'class': 'storageRow', _repObject: "$item", onclick: '$onClickRow'},
+                        TR({'class': 'storageRow', _repObject: "$item"},
                            TD({'class': 'storageCol'},
                                DIV({'class': 'sourceLine storageRowHeader'},
                                     '&nbsp;'
                                )
                             ),
                             TD({'class': 'storageKeyCol storageCol'},
-                                DIV({'class': 'storageKeyLabel storageLabel', 'onclick': '$onClickRow'}, '$item.key')
+                                DIV({'class': 'storageKeyLabel storageLabel'}, '$item.key')
                             ),
                             TD({'class': 'storageValueCol storageCol'},
                                 DIV({'class': 'storageValueLabel storageLabel'}, 
@@ -70,8 +70,8 @@ define(
                     bodyTag: DIV(
                         {'class': 'storageInfoBody', _repObject: "$storage"},
                         DIV({'class': 'storageInfoTabs'},
-                            A({'class': 'storageInfoValueTab storageInfoTab', 'onclick': '$onClickTab', 'view': 'Value'}, 'Value'),
-                            A({'class': 'storageInfoJsonTab storageInfoTab', 'onclick': '$onClickTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, 'JSON')
+                            A({'class': 'storageInfoValueTab storageInfoTab', 'view': 'Value'}, 'Value'),
+                            A({'class': 'storageInfoJsonTab storageInfoTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, 'JSON')
                         ),
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
@@ -112,7 +112,7 @@ define(
                         var textBodyName = 'storageInfo' + view + 'Text';
     
                         storageInfoBody.selectedTab = tab;
-                        storageInfoBody.selectedText = Dom.getChildByClass(storageInfoBody, textBodyName);
+                        storageInfoBody.selectedText = storageInfoBody.getElementsByClassName(textBodyName).item(0);
     
                         storageInfoBody.selectedTab.setAttribute('selected', 'true');
                         storageInfoBody.selectedText.setAttribute('selected', 'true');
@@ -126,7 +126,7 @@ define(
                     updateInfo: function(storageInfoBody, storage, context) {
                         var tab = storageInfoBody.selectedTab;
                         if (Css.hasClass(tab, 'storageInfoValueTab')) {
-                            var valueBox = Dom.getChildByClass(storageInfoBody, 'storageInfoValueText');
+                            var valueBox = storageInfoBody.getElementsByClassName('storageInfoValueText').item(0);
                             if (!storageInfoBody.valuePresented)
                             {
                                 storageInfoBody.valuePresented = true;
@@ -135,7 +135,7 @@ define(
                                     String.insertWrappedText(text, valueBox);
                             }
                         } else if (Css.hasClass(tab, 'storageInfoJsonTab')) {
-                            var valueBox = Dom.getChildByClass(storageInfoBody, 'storageInfoJsonText');
+                            var valueBox = storageInfoBody.getElementsByClassName('storageInfoJsonText').item(0);
                             if (!storageInfoBody.jsonPresented)
                             {
                                 storageInfoBody.jsonPresented = true;
@@ -168,24 +168,23 @@ define(
                         this.removeStorageRow(storageRow);
                     },
                     insertStorageRow : function (storage) {
-                        return this.storageitemtag.insertRows(
+                        var row = this.storageitemtag.insertRows(
                             {
                                 array: [storage]
                             }, 
-                            storageTable
-                        )[0]; 
+                            storageTable.lastChild
+                        )[0];
+                        row.addEventListener('click', this.onClickRow.bind(this));
+                        return row;
                     },
                     onClickRow: function(event) {
-                            if (!Events.isLeftClick(event))
-                                return;
-    
-                            var row = Dom.getAncestorByClass(event.target, 'storageRow');
-                            if (row)
-                            {
-                                this.toggleRow(row);
-                                Events.cancelEvent(event);
-                            }
-                        },
+                        var row = Dom.getAncestorByClass(event.target, 'storageRow');
+                        if (row)
+                        {
+                            this.toggleRow(row);
+                            Events.cancelEvent(event);
+                        }
+                    },
                     toggleRow: function(row, forceOpen) {
                         var opened = Css.hasClass(row, 'opened');
                         if (opened && forceOpen)
@@ -196,9 +195,9 @@ define(
                         if (Css.hasClass(row, 'opened'))
                         {
                             var bodyRow = this.bodyRow.insertRows({}, row)[0];
-                            var bodyCol = Dom.getElementByClass(bodyRow, 'storageInfoCol');
-                            var storageInfo = this.bodyTag.replace({storage: row.repObject}, bodyCol);
-    
+                            var bodyCol = bodyRow.getElementsByClassName('storageInfoCol').item(0);
+                            var storageInfo = this.insertBodyTag(row.repObject, bodyCol);
+                            
                             // If JSON tab is available select it by default.
                              if (this.selectTabByName(storageInfo, 'Json'))
                                 return;
@@ -209,6 +208,14 @@ define(
                         {
                             row.parentNode.removeChild(row.nextSibling);
                         }
+                    },
+                    insertBodyTag : function (storage, bodyCol) {
+                        var storageInfo = this.bodyTag.replace({storage: storage}, bodyCol);
+                        var elements = storageInfo.getElementsByClassName("storageInfoTab");
+                        for (var i = 0, imax = elements.length; i < imax; i++) {
+                            elements.item(i).addEventListener('click', this.onClickTab.bind(this));
+                        }
+                        return storageInfo;
                     },
                     selectTabByName: function(storageInfoBody, tabName)
                     {
@@ -222,9 +229,6 @@ define(
                         return false;
                     },                    
                     onClickHeader: function(event) {
-                        if (!Events.isLeftClick(event))
-                            return;
-    
                         var table = Dom.getAncestorByClass(event.target, 'storageTable');
                         var column = Dom.getAncestorByClass(event.target, 'storageHeaderCell');
                         this.sortColumn(table, column);
@@ -253,10 +257,11 @@ define(
                     },
                     sort: function(table, colIndex, numerical, direction) {
                         var tbody = table.lastChild;
+                        
                         var headerRow = tbody.firstChild;
     
                         // Remove class from the currently sorted column
-                        var headerSorted = Dom.getChildByClass(headerRow, 'storageHeaderSorted');
+                        var headerSorted = headerRow.getElementsByClassName('storageHeaderSorted').item(0);
                         Css.removeClass(headerSorted, 'storageHeaderSorted');
     
                         // Mark new column as sorted.
@@ -323,22 +328,32 @@ define(
                     },                        
                     render: function(panel) {
                         this.clear(panel.panelNode);
-                        storageTable = this.storageheadingtag.append({}, panel.panelNode);
-                        this.renderStorage(panel, 'localStorage', storageTable.lastChild);
-                        this.renderStorage(panel, 'sessionStorage', storageTable.lastChild);
+                        storageTable = this.renderStorageHeading(panel.panelNode);
+                        this.renderStorages();
+                    },
+                    renderStorageHeading : function (node) {
+                        var storageTable = this.storageheadingtag.append({}, node);
+                        storageTable.lastChild.firstChild.addEventListener('click', this.onClickHeader.bind(this));
+                        return storageTable;
+                    },
+                    renderStorages : function() {
+                        this.renderStorage('localStorage');
+                        this.renderStorage('sessionStorage');
                     },
                     clear: function(element) {
                         Dom.clearNode(element);
                     },
-                    renderStorage: function(panel, storage, table) {
+                    renderStorage: function(storage) {
+                        var i, imax;
                         var items = FireStoragePlusStorage.getStorageItems(storage);
-                        if (items.length > 0) {
-                            this.storageitemtag.insertRows(
-                                {
-                                    array: items
-                                }, 
-                                table
-                            );        
+                        imax = items.length;
+                        
+                        if (imax > 0) {
+                            for (i = 0, imax = items.length; i < imax; i++) {
+                                this.insertStorageRow(
+                                    items[i]
+                                );        
+                            }
                         }                                
                     }
                 }
