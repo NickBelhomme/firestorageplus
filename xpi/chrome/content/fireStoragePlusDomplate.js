@@ -154,9 +154,9 @@ define(
                     removeStorageRow: function(element) {
                         var row = this.getStorageRowFromNode(element);
                         if (Css.hasClass(row.nextSibling, 'storageInfoRow')) {
-                            this.clear(row.nextSibling);
+                            this.remove(row.nextSibling);
                         }
-                        this.clear(row);
+                        this.remove(row);
                     },
                     getStorageRowFromNode : function (node) {
                         if (Css.hasClass(node, 'storageRow')) {
@@ -256,17 +256,17 @@ define(
                         for (col = col.previousSibling; col; col = col.previousSibling) {
                             ++colIndex;
                         }
-
                         this.sort(table, colIndex, numerical, direction);
                     },
                     sort: function(table, colIndex, numerical, direction) {
                         var tbody = table.lastChild;
 
                         var headerRow = tbody.firstChild;
-
                         // Remove class from the currently sorted column
-                        var headerSorted = headerRow.getElementsByClassName('storageHeaderSorted').item(0);
-                        Css.removeClass(headerSorted, 'storageHeaderSorted');
+                        var headerSorted = headerRow.getElementsByClassName('storageHeaderSorted');
+                        if (headerSorted) {
+                            Css.removeClass(headerSorted.item(0), 'storageHeaderSorted');
+                        }
 
                         // Mark new column as sorted.
                         var header = headerRow.childNodes[colIndex];
@@ -346,6 +346,11 @@ define(
                     },
                     clear: function(element) {
                         Dom.clearNode(element);
+                    },
+                    remove: function(element) {
+                        if (element.parentNode) {
+                            element.parentNode.removeChild(element);
+                        }
                     },
                     renderStorage: function(storage) {
                         var i, imax;
