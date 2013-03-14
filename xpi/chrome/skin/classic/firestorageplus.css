@@ -139,6 +139,14 @@
     color: rgb(128, 128, 128);
 }
 
+.storageTypeLabel.sessionStorage {
+    color: green;
+}
+
+.storageTypeLabel.localStorage {
+    color: blue;
+}
+
 /* This style makes sure that only portion of text is visible
  depending on current size (width) of the parent column */
 .storageValueLabel {

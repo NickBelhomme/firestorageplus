@@ -56,7 +56,7 @@ define(
                                 )
                             ),
                             TD({'class': 'storageTypeCol storageCol'},
-                                DIV({'class': 'storageTypeLabel storageLabel'},
+                                DIV({'class': 'storageTypeLabel storageLabel $item.type'},
                                     SPAN('$item.type')
                                 )
                             )
