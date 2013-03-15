@@ -343,6 +343,11 @@ define(
                     renderStorages : function() {
                         this.renderStorage('localStorage');
                         this.renderStorage('sessionStorage');
+                        var prefValue = Options.get(lastSortedColumn);
+                        if (prefValue) {
+                            var values = prefValue.split(" ");
+                            this.sortColumn(storageTable, values[0], values[1]);
+                        }
                     },
                     clear: function(element) {
                         Dom.clearNode(element);
