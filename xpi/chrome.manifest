@@ -2,8 +2,8 @@ content  firestorageplus chrome/content/
 skin     firestorageplus classic/1.0   chrome/skin/classic/
 
 locale  firestorageplus de          chrome/locale/de/
-locale  firestorageplus en-US       chrome/locale/en/
-locale  firestorageplus en          chrome/locale/en/
+locale  firestorageplus en-US       chrome/locale/en-US/
+locale  firestorageplus en          chrome/locale/en-US/
 locale  firestorageplus es          chrome/locale/es/
 locale  firestorageplus fr          chrome/locale/fr/
 locale  firestorageplus nl          chrome/locale/nl/

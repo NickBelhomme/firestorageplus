@@ -74,8 +74,8 @@ define(
                     bodyTag: DIV(
                         {'class': 'storageInfoBody', _repObject: "$storage"},
                         DIV({'class': 'storageInfoTabs'},
-                            A({'class': 'storageInfoValueTab storageInfoTab', 'view': 'Value'}, Locale.$STR("Value")),
-                            A({'class': 'storageInfoJsonTab storageInfoTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, Locale.$STR("JSON"))
+                            A({'class': 'storageInfoValueTab storageInfoTab', 'view': 'Value'}, Locale.$STR("firestorageplus.Value")),
+                            A({'class': 'storageInfoJsonTab storageInfoTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, Locale.$STR("firestorageplus.JSON"))
                         ),
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
