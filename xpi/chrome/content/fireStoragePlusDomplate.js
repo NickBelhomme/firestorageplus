@@ -1,6 +1,7 @@
 define(
     [
         'firebug/lib/events',
+        'firebug/lib/locale',
         'firebug/lib/dom',
         'firebug/lib/css',
         'firebug/lib/string',
@@ -8,9 +9,12 @@ define(
         "firebug/lib/domplate",
         "firestorageplus/fireStoragePlusStorage"
     ],
-    function(Events, Dom, Css, String, Options, Domplate, FireStoragePlusStorage) {
+    function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage) {
+
+        Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'storage.lastSortedColumn';
         var storageTable = null;
+        
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
                 {
@@ -24,17 +28,17 @@ define(
                                 TD({id: 'colKey', role: 'columnheader',
                                     'class': 'storageHeaderCell alphaValue'},
                                     DIV({'class': 'storageHeaderCellBox'},
-                                    'Key')
+                                    Locale.$STR("firestorageplus.Key"))
                                 ),
                                 TD({id: 'colValue', role: 'columnheader',
                                     'class': 'storageHeaderCell alphaValue'},
                                     DIV({'class': 'storageHeaderCellBox'},
-                                    'Value')
+                                    Locale.$STR("firestorageplus.Value"))
                                 ),
                                 TD({id: 'colType', role: 'columnheader',
                                     'class': 'storageHeaderCell alphaValue'},
                                     DIV({'class': 'storageHeaderCellBox'},
-                                    'Type')
+                                    Locale.$STR("firestorageplus.Storage"))
                                 )
                             )
                         )
@@ -70,8 +74,8 @@ define(
                     bodyTag: DIV(
                         {'class': 'storageInfoBody', _repObject: "$storage"},
                         DIV({'class': 'storageInfoTabs'},
-                            A({'class': 'storageInfoValueTab storageInfoTab', 'view': 'Value'}, 'Value'),
-                            A({'class': 'storageInfoJsonTab storageInfoTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, 'JSON')
+                            A({'class': 'storageInfoValueTab storageInfoTab', 'view': 'Value'}, Locale.$STR("Value")),
+                            A({'class': 'storageInfoJsonTab storageInfoTab', 'view': 'Json', $collapsed: "$storage|hideJsonTab"}, Locale.$STR("JSON"))
                         ),
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
@@ -167,9 +171,10 @@ define(
                     },
                     replaceStorageRow : function (storage, element) {
                         var storageRow = this.getStorageRowFromNode(element);
-                        var newStorageRow = this.insertStorageRow(storage);
-                        this.removeStorageRow(storageRow);
-                        Dom.insertAfter(newStorageRow, storageRow);
+                        if (Css.hasClass(storageRow.nextSibling, 'storageInfoRow')) {
+                            this.remove(storageRow.nextSibling);
+                        }
+                        storageRow.parentNode.replaceChild(this.insertStorageRow(storage), storageRow);
                     },
                     insertStorageRow : function (storage) {
                         var row = this.storageitemtag.insertRows(

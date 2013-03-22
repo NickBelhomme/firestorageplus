@@ -1,6 +1,7 @@
 define(
     [
         'firebug/lib/object',
+        'firebug/lib/locale',
         'firebug/lib/trace',
         'firebug/lib/dom',
         "firestorageplus/fireStoragePlusDomplate",
@@ -8,12 +9,12 @@ define(
         "firestorageplus/fireStoragePlusStorage",
         "firestorageplus/fireStoragePlusEdit"
     ],
-    function(Obj, FBTrace, Dom, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
+    function(Obj, Locale, FBTrace, Dom, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
         var panelName = 'firestorageplus';
+        Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
+        var FireStoragePlus = function FireStoragePlus() {};
 
-        Firebug.FireStoragePlus = function FireStoragePlus() {};
-
-        Firebug.FireStoragePlus.prototype = Obj.extend(
+        FireStoragePlus.prototype = Obj.extend(
             Firebug.Panel,
             {
                 name: panelName,
@@ -38,7 +39,7 @@ define(
                     Firebug.Panel.show.apply(this, arguments);
                     FireStoragePlusDomplate.render(this);
                 },
-
+                
                 refresh: function() {
                 },
 
@@ -49,33 +50,33 @@ define(
                     }
                     
                     items.push({
-                      label: "Copy",
+                      label: Locale.$STR("firestorageplus.Copy"),
                       command: Obj.bindFixed(this.onCopy, this, storage)
                     });
                     items.push("-");
                     items.push({
-                      label: "Paste",
+                      label: Locale.$STR("firestorageplus.Paste"),
                       //disabled: FireStoragePlusClipboard.isStorageAvailable() ? false : true,
                       command: Obj.bindFixed(this.onPaste, this, storage)
                     });
                     items.push("-");
                     items.push({
-                      label: "Delete",
+                      label: Locale.$STR("firestorageplus.Remove"),
                       command: Obj.bindFixed(this.onRemove, this, target, storage)
                     });
                     items.push("-");
                     items.push({
-                      label: "Edit",
+                      label: Locale.$STR("firestorageplus.Edit"),
                       command: Obj.bindFixed(this.onEdit, this, target, storage)
                     });
                     items.push("-");
                     items.push({
-                        label: "Create",
+                        label: Locale.$STR("firestorageplus.Create"),
                         command: Obj.bindFixed(this.onCreate, this)
                     });
                     items.push("-");
                     items.push({
-                        label: "About",
+                        label: Locale.$STR("firestorageplus.About"),
                         command: Obj.bindFixed(this.onAbout, this)
                     });
                     return items;
@@ -135,9 +136,9 @@ define(
             }
         );
 
-        Firebug.registerPanel(Firebug.FireStoragePlus);
+        Firebug.registerPanel(FireStoragePlus);
         Firebug.registerStylesheet("chrome://firestorageplus/skin/firestorageplus.css");
 
-        return Firebug.FireStoragePlus;
+        return FireStoragePlus;
     }
 );

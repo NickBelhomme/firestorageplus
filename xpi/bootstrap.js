@@ -2,20 +2,22 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 var Cu = Components.utils;
 
-var defaultPrefs = {"DBG_FIRESTORAGEPLUS": true};
-
 function install(data, reason) {}
 function uninstall(data, reason) {}
-function startup(data, reason) { firebugStartup(); }
+function startup(data, reason) { firebugStartup(data); }
 function shutdown(data, reason) { firebugShutdown(); }
 
-function firebugStartup()
+function firebugStartup(data)
 {
     try
     {
         Cu.import("resource://firebug/loader.js");
         FirebugLoader.registerBootstrapScope(this);
-        FirebugLoader.registerDefaultPrefs(defaultPrefs);
+        
+        Cu.import("resource://firebug/prefLoader.js");
+
+        // Register default preferences
+        PrefLoader.loadDefaultPrefs(data.installPath, "firestorageplus.js");
     }
     catch (e)
     {
@@ -49,7 +51,7 @@ function topWindowUnload(win)
 
 function firebugFrameLoad(Firebug)
 {
-    Firebug.registerTracePrefix(";", "DBG_FIRESTORAGEPLUS", true,
+    Firebug.registerTracePrefix("firestorageplus;", "DBG_FIRESTORAGEPLUS", true,
         "chrome://firestorageplus/skin/firestorageplus.css");
 
     var config = {id: "firestorageplus@nickbelhomme.com"};
