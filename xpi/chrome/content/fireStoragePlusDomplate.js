@@ -39,6 +39,11 @@ define(
                                     'class': 'storageHeaderCell alphaValue'},
                                     DIV({'class': 'storageHeaderCellBox'},
                                     Locale.$STR("firestorageplus.Storage"))
+                                ),
+                                TD({id: 'colScope', role: 'columnheader',
+                                    'class': 'storageHeaderCell alphaValue'},
+                                    DIV({'class': 'storageHeaderCellBox'},
+                                            Locale.$STR("firestorageplus.Scope"))
                                 )
                             )
                         )
@@ -63,13 +68,18 @@ define(
                                 DIV({'class': 'storageTypeLabel storageLabel $item.type'},
                                     SPAN('$item.type')
                                 )
+                            ),
+                            TD({'class': 'storageScopeCol storageCol'},
+                                    DIV({'class': 'storageScopeLabel storageLabel $item.scope'},
+                                            SPAN('$item.scope')
+                                    )
                             )
                         )
                     ),
                     bodyRow: TR(
                         {'class': 'storageInfoRow'},
                         TD({'class': 'sourceLine storageRowHeader'}),
-                        TD({'class': 'storageInfoCol', colspan: 4})
+                        TD({'class': 'storageInfoCol', colspan: 5})
                     ),
                     bodyTag: DIV(
                         {'class': 'storageInfoBody', _repObject: "$storage"},

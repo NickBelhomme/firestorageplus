@@ -38,6 +38,7 @@ define(
                 show: function(state) {
                     Firebug.Panel.show.apply(this, arguments);
                     FireStoragePlusDomplate.render(this);
+                    FireStoragePlusStorage.getAllLocalStorageItems();
                 },
                 
                 refresh: function() {

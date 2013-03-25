@@ -6,11 +6,14 @@ define(
     function(FBTrace, FireStoragePlusStorageItem) {
         var FireStoragePlusStorage = {
             getStorageItems: function (storage) {
+                if (storage === 'localStorage') {
+                    return this.getAllLocalStorageItems();
+                }
                 var storageObject = this.getStorageObject(storage);
                 var items = [];
                 var item;
                 for (var key in storageObject) {
-                    item = new FireStoragePlusStorageItem(key, storageObject[key], storage);
+                    item = new FireStoragePlusStorageItem(key, storageObject[key], storage, this.getScopeFromLocation());
                     items.push(item);
                 }
                 return items;
@@ -45,6 +48,11 @@ define(
                         FBTrace.sysout('fireStoragePlus; EXCEPTION ' + e, e);
                 }
                 return object;
+            },
+            getScopeFromLocation : function() {
+                var location = Firebug.currentContext.window.location;
+                var port = location.port !== '' ? location.port : (location.protocol === 'https:' ? 443 : 80);
+                return location.protocol + "://" + location.host + ":" + port +"/";
             },
             makeObject : function(storage) {
                 // Create a raw object, free from getItem etc., from a storage.
@@ -104,6 +112,58 @@ define(
 
                 storage.setItem(key, unescape(value));
                 return key;
+            },
+            getAllLocalStorageItems : function () {
+                var items = [];
+                var item;
+                
+                
+                Components.utils.import("resource://gre/modules/FileUtils.jsm");
+                var file = FileUtils.getFile("ProfD", ["webappsstore.sqlite"]);
+                if (file.exists()) {
+                  var localStorageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
+                  var db = localStorageService.openDatabase(file);
+                  var statement = db.createStatement("select scope,key,value,rowid from webappsstore2;");
+                  
+                  while(statement.executeStep())
+                  {
+                      item = new FireStoragePlusStorageItem(statement.getString(1), statement.getString(2), 'localStorage', this.getScope(statement.getString(0)));
+                      items.push(item);
+                  }
+                  statement.reset();
+                  return items;
+                }
+            },
+            getScope : function (string) {
+                var values = string.split(":");
+                
+                if (3 != values.length) {
+                    return string;
+                }
+                
+                var port = values.pop();
+                var scheme = values.pop();
+                var host = values.pop();
+                
+                var hostValues = host.split(".");
+                
+                host = "";
+                
+                for(var i = 0, imax = hostValues.length; i < imax; i++)
+                {
+                    string = hostValues.pop();
+                    
+                    if (string != "")
+                    {
+                        host = host + string.split("").reverse().join("");
+                        if (i < imax-1)
+                        {
+                            host += ".";
+                        }               
+                    }            
+                }
+                
+                return scheme + "://" + host + ":" + port +"/";
             }
         };
 
