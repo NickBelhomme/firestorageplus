@@ -13,7 +13,7 @@ define(
                 var items = [];
                 var item;
                 for (var key in storageObject) {
-                    item = new FireStoragePlusStorageItem(key, storageObject[key], storage, this.getScopeFromLocation());
+                    item = new FireStoragePlusStorageItem(key, storageObject[key], storage, this.getCurrentScope());
                     items.push(item);
                 }
                 return items;
@@ -49,7 +49,7 @@ define(
                 }
                 return object;
             },
-            getScopeFromLocation : function() {
+            getCurrentScope : function() {
                 var location = Firebug.currentContext.window.location;
                 var port = location.port !== '' ? location.port : (location.protocol === 'https:' ? 443 : 80);
                 return location.protocol + "://" + location.host + ":" + port +"/";
@@ -72,6 +72,10 @@ define(
                 return object;
             },
             remove : function(storage) {
+                if (storage.type === 'localStorage') {
+                    this.removeLocalStorage(storage);
+                    return;
+                }
                 var context = Firebug.currentContext;
                 Firebug.CommandLine.evaluate(
                     '(' + storage.type  +'.removeItem("' + storage.key + '"))',
@@ -97,6 +101,7 @@ define(
                     },
                     true
                 );
+                storage.scope = this.getCurrentScope();
                 return storage;
             },
             addStorage : function (storage, key, value) {
@@ -116,25 +121,75 @@ define(
             getAllLocalStorageItems : function () {
                 var items = [];
                 var item;
-                
-                
+                var db = this.getDatabaseConnection();
+                if (db) {
+                      var statement = db.createStatement("select scope,key,value,rowid from webappsstore2;");
+                      
+                      while(statement.executeStep())
+                      {
+                          item = new FireStoragePlusStorageItem(statement.getString(1), statement.getString(2), 'localStorage', this.normalizeScope(statement.getString(0)));
+                          items.push(item);
+                      }
+                      statement.reset();
+                }
+                return items;
+            },
+            getDatabaseConnection : function() {
                 Components.utils.import("resource://gre/modules/FileUtils.jsm");
                 var file = FileUtils.getFile("ProfD", ["webappsstore.sqlite"]);
                 if (file.exists()) {
-                  var localStorageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
-                  var db = localStorageService.openDatabase(file);
-                  var statement = db.createStatement("select scope,key,value,rowid from webappsstore2;");
-                  
-                  while(statement.executeStep())
-                  {
-                      item = new FireStoragePlusStorageItem(statement.getString(1), statement.getString(2), 'localStorage', this.getScope(statement.getString(0)));
-                      items.push(item);
-                  }
-                  statement.reset();
-                  return items;
+                    var localStorageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
+                    return localStorageService.openDatabase(file);
+                }
+                return false;
+            },
+            removeLocalStorage : function (storage) {
+                var db = this.getDatabaseConnection();
+                var statement;
+                if (db) {
+                    statement = db.createStatement("delete from webappsstore2 where scope = :scope and key = :key");
+                    statement.params.scope = this.denormalizeScope(this.getCurrentScope());
+                    statement.params.key = storage.key;
+                    statement.execute();
                 }
             },
-            getScope : function (string) {
+            removeAllLocalStorage : function (scope) {
+                var db = this.getDatabaseConnection();
+                if (db) {
+                    db.executeSimpleSQL("delete from webappsstore2");
+                }
+            },
+            removeLocalStorageForScope : function (scope) {
+                var db = this.getDatabaseConnection();
+                var statement;
+                if (db) {
+                    statement = db.createStatement("delete from webappsstore2 where scope = :scope");
+                    statement.params.scope = this.denormalizeScope(scope);
+                    statement.execute();
+                }
+            },
+            denormalizeScope : function (scope) {
+                //input format "http://www.facebook.com:443"                
+                //returned format "moc.koobecaf.www.:https:443"                
+                var values = scope.split(":");
+                
+                if (scope = 'about:://:80/') {
+                    return 'emoh.:about';
+                }
+                
+                if (4 != values.length) {
+                    return scope;
+                }
+                
+                var port = values.pop().slice(0, -1);
+                var scheme = values.shift();
+                var host = values.pop();
+                host = host.substr(2).split("").reverse().join("");
+                return host + ".:" + scheme + ":" + port;
+            },
+            normalizeScope : function (string) {
+                //input format "moc.koobecaf.www.:https:443"                
+                //returned format "http://www.facebook.com:443"                
                 var values = string.split(":");
                 
                 if (3 != values.length) {
@@ -148,22 +203,22 @@ define(
                 var hostValues = host.split(".");
                 
                 host = "";
+                var hostDenormalized;
                 
                 for(var i = 0, imax = hostValues.length; i < imax; i++)
                 {
-                    string = hostValues.pop();
+                    hostDenormalized = hostValues.pop();
                     
-                    if (string != "")
+                    if (hostDenormalized != "")
                     {
-                        host = host + string.split("").reverse().join("");
+                        host = host + hostDenormalized.split("").reverse().join("");
                         if (i < imax-1)
                         {
                             host += ".";
                         }               
                     }            
                 }
-                
-                return scheme + "://" + host + ":" + port +"/";
+                return scheme + "://" + host + ":" + port;
             }
         };
 

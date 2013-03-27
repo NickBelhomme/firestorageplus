@@ -77,6 +77,16 @@ define(
                     });
                     items.push("-");
                     items.push({
+                        label: Locale.$STR("firestorageplus.Delete localStorages for current scope"),
+                        command: Obj.bindFixed(this.onRemoveLocalStorageForScope, this)
+                    });
+                    items.push("-");
+                    items.push({
+                        label: Locale.$STR("firestorageplus.Delete localStorages for all scopes"),
+                        command: Obj.bindFixed(this.onRemoveAllLocalStorage, this)
+                    });
+                    items.push("-");
+                    items.push({
                         label: Locale.$STR("firestorageplus.About"),
                         command: Obj.bindFixed(this.onAbout, this)
                     });
@@ -96,6 +106,14 @@ define(
                 onRemove: function(element, storage) {
                     FireStoragePlusStorage.remove(storage);
                     FireStoragePlusDomplate.removeStorageRow(element);
+                },
+                onRemoveAllLocalStorage: function(element) {
+                    FireStoragePlusStorage.removeAllLocalStorage();
+                    this.show();
+                },
+                onRemoveLocalStorageForScope: function(element) {
+                    FireStoragePlusStorage.removeLocalStorageForScope(FireStoragePlusStorage.getCurrentScope());
+                    this.show();
                 },
                 onEdit: function(element, storage) {
                     var params = {
