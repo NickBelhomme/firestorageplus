@@ -12,7 +12,7 @@ define(
     function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage) {
 
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
-        var lastSortedColumn = 'storage.lastSortedColumn';
+        var lastSortedColumn = 'firestorageplus.lastSortedColumn';
         var storageTable = null;
         
         with (Domplate) {

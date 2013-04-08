@@ -7,7 +7,7 @@ define(
         var FireStoragePlusStorage = {
             getStorageItems: function (storage) {
                 if (storage === 'localStorage') {
-                    return this.getAllLocalStorageItems();
+                   // return this.getAllLocalStorageItems();
                 }
                 var storageObject = this.getStorageObject(storage);
                 var items = [];

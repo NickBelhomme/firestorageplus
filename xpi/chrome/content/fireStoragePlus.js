@@ -7,12 +7,15 @@ define(
         "firestorageplus/fireStoragePlusDomplate",
         "firestorageplus/fireStoragePlusClipboard",
         "firestorageplus/fireStoragePlusStorage",
-        "firestorageplus/fireStoragePlusEdit"
+        "firestorageplus/fireStoragePlusEdit",
+        "firestorageplus/fireStoragePlusObserver"
     ],
-    function(Obj, Locale, FBTrace, Dom, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit) {
+    function(Obj, Locale, FBTrace, Dom, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit, FireStoragePlusObserver) {
         var panelName = 'firestorageplus';
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
-        var FireStoragePlus = function FireStoragePlus() {};
+        var FireStoragePlus = function FireStoragePlus() {
+           this.observer = null;
+        };
 
         FireStoragePlus.prototype = Obj.extend(
             Firebug.Panel,
@@ -28,7 +31,6 @@ define(
                         FBTrace.sysout("firestorageplus; panel init");
                     }
                     Firebug.Panel.initialize.apply(this, arguments);
-                    this.refresh();
                 },
 
                 destroy: function(state) {
@@ -43,7 +45,6 @@ define(
                 
                 refresh: function() {
                 },
-
                 getContextMenuItems: function(storage, target, context) {
                     var items = [];
                     if (Dom.getAncestorByClass(target, "storageHeaderRow")) {
@@ -151,7 +152,7 @@ define(
                         openDialog("chrome://mozapps/content/extensions/about.xul", "",
                         "chrome,centerscreen,modal", addon);
                     });
-                },
+                }
             }
         );
 
