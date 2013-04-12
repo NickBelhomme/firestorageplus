@@ -48,8 +48,22 @@ define(
             },
             getCurrentScope : function() {
                 var location = Firebug.currentContext.window.location;
-                var port = location.port !== '' ? location.port : (location.protocol === 'https:' ? 443 : 80);
-                return location.protocol + "://" + location.host + ":" + port +"/";
+                var port = location.port;
+                if (port === '') {
+                    switch (location.protocol) {
+                        case 'http:': 
+                            port = 80;
+                            break;
+                        case 'https:': 
+                            port = 443;
+                            break;
+                    }
+                }
+                if (port !== '') {
+                    return location.href.substr(0, location.href.length -1 ) + ':' + port;
+                } else {
+                    return location.href;
+                }
             },
             makeObject : function(storage) {
                 // Create a raw object, free from getItem etc., from a storage.
@@ -174,10 +188,6 @@ define(
                 //returned format "moc.koobecaf.www.:https:443"                
                 var values = scope.split(":");
                 
-                if (scope = 'about:://:80/') {
-                    return 'emoh.:about';
-                }
-                
                 if (4 != values.length) {
                     return scope;
                 }
@@ -189,12 +199,13 @@ define(
                 return host + ".:" + scheme + ":" + port;
             },
             normalizeScope : function (string) {
-                //input format "moc.koobecaf.www.:https:443"                
+                //input format "moc.koobecaf.www.:https:443"    
+                //emoh.:about             
                 //returned format "http://www.facebook.com:443"                
                 var values = string.split(":");
                 
                 if (3 != values.length) {
-                    return string;
+                    return this.normalizeAbout(string);
                 }
                 
                 var port = values.pop();
@@ -220,6 +231,20 @@ define(
                     }            
                 }
                 return scheme + "://" + host + ":" + port;
+            },
+            normalizeAbout : function (string) {
+                //emoh.:about             
+                //returned  about:home                
+                var values = string.split(":");
+                
+                if (2 != values.length) {
+                    return string;
+                }
+                
+                var about = values.pop();
+                var page = values.pop();
+                page = page.split("").reverse().join("");
+                return about + ":" + page.substr(1);
             }
         };
 
