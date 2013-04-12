@@ -60,7 +60,7 @@ define(
                     }
                 }
                 if (port !== '') {
-                    return location.href.substr(0, location.href.length -1 ) + ':' + port;
+                    return location.protocol + '//' + location.host + ':' + port;
                 } else {
                     return location.href;
                 }
