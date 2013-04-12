@@ -13,6 +13,7 @@ define(
 
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'firestorageplus.lastSortedColumn';
+        var preferedStorage = 'firestorageplus.preferedStorage';
         var storageTable = null;
         
         with (Domplate) {
@@ -47,6 +48,13 @@ define(
                                 )
                             )
                         )
+                    ),
+                    toolbar: DIV(
+                        {'id': 'fspToolbar'},
+                        BUTTON({id: 'all-current-scope'}, Locale.$STR("firestorageplus.Both")),
+                        BUTTON({id: 'localstorage-current-scope'}, Locale.$STR("firestorageplus.localStorage")),
+                        BUTTON({id: 'sessionstorage-current-scope'}, Locale.$STR("firestorageplus.sessionStorage")),
+                        BUTTON({id: 'localStorage-all'}, Locale.$STR("firestorageplus.localStorage all scopes"))
                     ),
                     storageitemtag: FOR(
                         'item', '$array',
@@ -89,6 +97,27 @@ define(
                         ),
                         DIV({'class': 'storageInfoValueText storageInfoText'}),
                         DIV({'class': 'storageInfoJsonText storageInfoText'})
+                    ),
+                    eventTag:  DIV({'class': 'storageEvent', _repObject: '$storage'},
+                        TABLE({cellpadding: 0, cellspacing: 0},
+                            TBODY(
+                                TR(
+                                    TD({width: '100%'},
+                                        SPAN(Locale.$STR('firestorageplus.Storage'), ' '),
+                                        SPAN({'class': 'storageNameLabel'}, 
+                                            '$storage.key', 
+                                            ' '),
+                                        SPAN({'class': 'storageValueLabel'}, 
+                                            '$storage|crop')
+                                    ),
+                                    TD(
+                                        SPAN({'class': 'storageScopeLabel',
+                                            title: '$storage.scope'}, '$storage.scope'),
+                                        SPAN('&nbsp;') 
+                                    )
+                                )
+                            )
+                        )
                     ),
                     prettify : function (value) {
                         try {
@@ -347,17 +376,60 @@ define(
                     },
                     render: function(panel) {
                         this.clear(panel.panelNode);
+                        this.renderToolbar(panel.panelNode);
                         storageTable = this.renderStorageHeading(panel.panelNode);
-                        this.renderStorages();
+                        this.renderPreferedStorage();
+                    },
+                    renderToolbar : function (node) {
+                        var toolbar = this.toolbar.append({}, node);
+                        var children = toolbar.children;
+                        var activeToolbarButton = Options.get(preferedStorage);
+                        
+                        for (var i = 0, imax = children.length; i < imax; i++) {
+                            children.item(i).addEventListener('click', this.onClickToolbar.bind(this));
+                            if (children.item(i).getAttribute('id') === activeToolbarButton) {
+                                Css.setClass(children.item(i), 'active');
+                            }
+                        }
+                        return toolbar;
+                    },
+                    onClickToolbar : function (event) {
+                        Options.set(preferedStorage, event.currentTarget.id);
+                        var children = event.currentTarget.parentElement.children;
+                        for (var i = 0, imax = children.length; i < imax; i++) {
+                            Css.removeClass(children.item(i), 'active');
+                        }
+                        Css.setClass(event.currentTarget, 'active');
+                        this.renderPreferedStorage();
+                    },
+                    renderPreferedStorage : function() {
+                        while (row = storageTable.lastChild.firstChild.nextSibling) {
+                            storageTable.lastChild.removeChild(row);
+                        }
+                        
+                        switch (Options.get(preferedStorage)) {
+                            case 'all-current-scope':
+                                this.renderStorage('localStorage');
+                                this.renderStorage('sessionStorage');
+                                break;
+                            case 'localstorage-current-scope':
+                                this.renderStorage('localStorage');
+                                break;
+                            case 'sessionstorage-current-scope':
+                                this.renderStorage('sessionStorage');
+                                break;
+                            case 'localStorage-all':
+                                this.renderStorage('allLocalStorage');
+                                break;
+                        }
+                        this.sortStorages();
                     },
                     renderStorageHeading : function (node) {
                         var storageTable = this.storageheadingtag.append({}, node);
                         storageTable.lastChild.firstChild.addEventListener('click', this.onClickHeader.bind(this));
                         return storageTable;
                     },
-                    renderStorages : function() {
-                        this.renderStorage('localStorage');
-                        this.renderStorage('sessionStorage');
+                    sortStorages : function() {
                         var prefValue = Options.get(lastSortedColumn);
                         if (prefValue) {
                             var values = prefValue.split(" ");
@@ -373,8 +445,12 @@ define(
                         }
                     },
                     renderStorage: function(storage) {
-                        var i, imax;
-                        var items = FireStoragePlusStorage.getStorageItems(storage);
+                        var i, imax, items;
+                        if (storage === 'allLocalStorage') {
+                            items = FireStoragePlusStorage.getAllLocalStorageItems(storage);
+                        } else {
+                            items = FireStoragePlusStorage.getStorageItems(storage);
+                        }
                         imax = items.length;
 
                         if (imax > 0) {

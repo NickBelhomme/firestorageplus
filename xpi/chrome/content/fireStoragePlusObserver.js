@@ -1,16 +1,22 @@
 define(
     [
-     'firestorageplus/fireStoragePlusStorageItem'
+     'firebug/lib/options',
+     'firestorageplus/fireStoragePlusStorageItem',
+     'firestorageplus/fireStoragePlusDomplate'
     ],
-    function(FireStoragePlusStorageItem) {
+    function(Options, FireStoragePlusStorageItem, FireStoragePlusDomplate) {
         var FireStoragePlusObserver = function () {
             this.topic = 'dom-storage2-changed';
+            this.pref = 'firestorageplus.logEvents';
         };
         
         FireStoragePlusObserver.prototype = {
             observe: function(subject, topic, data) {
-                var item = new FireStoragePlusStorageItem(subject.key, subject.newValue, 'localStorage', subject.url);
-                Firebug.Console.log(item.toTruncatedString());
+                if (Options.getPref(Firebug.prefDomain, this.pref)) {
+                    var item = new FireStoragePlusStorageItem(subject.key, subject.newValue, 'localStorage', subject.url);
+                    Firebug.Console.log(item.toJSONObject());
+                }
+                FireStoragePlusDomplate.renderPreferedStorage();
             },
             register: function() {
                 this.getObserverService().addObserver(this, this.topic, false);

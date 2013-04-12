@@ -6,9 +6,6 @@ define(
     function(FBTrace, FireStoragePlusStorageItem) {
         var FireStoragePlusStorage = {
             getStorageItems: function (storage) {
-                if (storage === 'localStorage') {
-                   // return this.getAllLocalStorageItems();
-                }
                 var storageObject = this.getStorageObject(storage);
                 var items = [];
                 var item;
@@ -138,10 +135,14 @@ define(
                 Components.utils.import("resource://gre/modules/FileUtils.jsm");
                 var file = FileUtils.getFile("ProfD", ["webappsstore.sqlite"]);
                 if (file.exists()) {
-                    var localStorageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
-                    return localStorageService.openDatabase(file);
+                    var storageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
+                    return storageService.openDatabase(file);
                 }
                 return false;
+            },
+            getInMemoryDatabaseConnection : function() {
+                var storageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
+                //return storageService.openSpecialDatabase('storage-sqlite');
             },
             removeLocalStorage : function (storage) {
                 var db = this.getDatabaseConnection();

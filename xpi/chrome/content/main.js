@@ -8,7 +8,6 @@ define(
     ],
     function(FireStoragePlus, FireStoragePlusObserver, Array, Options, FBTrace) {
         var storageObserver = null;
-        var observerPref = 'firestorageplus.logEvents';
         
         var theApp =
         {
@@ -20,9 +19,7 @@ define(
                 }
                 if (storageObserver === null) {
                     storageObserver = new FireStoragePlusObserver();
-                    if (Options.getPref(Firebug.prefDomain, observerPref)) {
-                        storageObserver.register();
-                    }
+                    storageObserver.register();
                 }          
                 Firebug.registerUIListener(this);
             },
@@ -45,7 +42,7 @@ define(
                     return;
                 }
                 
-                var isLogEventsEnabled = Options.getPref(Firebug.prefDomain, observerPref);
+                var isLogEventsEnabled = Options.getPref(Firebug.prefDomain, storageObserver.pref);
                 var menuItem = {
                     label: "firestorageplus.show storage events",
                     tooltiptext: "firestorageplus.tip.show storage events",
@@ -54,12 +51,7 @@ define(
                     command: function()
                     {
                         var checked = this.hasAttribute("checked");
-                        Options.setPref(Firebug.prefDomain, observerPref, checked);
-                        if (checked) {
-                            storageObserver.register();
-                        } else {
-                            storageObserver.unregister();
-                        }
+                        Options.setPref(Firebug.prefDomain, storageObserver.pref, checked);
                     }
                 };
                 
