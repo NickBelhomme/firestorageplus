@@ -40,7 +40,6 @@ define(
                 show: function(state) {
                     Firebug.Panel.show.apply(this, arguments);
                     FireStoragePlusDomplate.render(this);
-                   // var db = FireStoragePlusStorage.getInMemoryDatabaseConnection();
                 },
                 
                 refresh: function() {
@@ -58,7 +57,6 @@ define(
                     items.push("-");
                     items.push({
                       label: Locale.$STR("firestorageplus.Paste"),
-                      //disabled: FireStoragePlusClipboard.isStorageAvailable() ? false : true,
                       command: Obj.bindFixed(this.onPaste, this, storage)
                     });
                     items.push("-");
@@ -78,12 +76,17 @@ define(
                     });
                     items.push("-");
                     items.push({
-                        label: Locale.$STR("firestorageplus.Delete localStorages for current scope"),
-                        command: Obj.bindFixed(this.onRemoveLocalStorageForScope, this)
+                        label: Locale.$STR("firestorageplus.Clear localStorages for current scope"),
+                        command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'localStorage')
                     });
                     items.push("-");
                     items.push({
-                        label: Locale.$STR("firestorageplus.Delete localStorages for all scopes"),
+                        label: Locale.$STR("firestorageplus.Clear sessionStorages for current scope"),
+                        command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'sessionStorage')
+                    });
+                    items.push("-");
+                    items.push({
+                        label: Locale.$STR("firestorageplus.Clear localStorages for all scopes"),
                         command: Obj.bindFixed(this.onRemoveAllLocalStorage, this)
                     });
                     items.push("-");
@@ -110,11 +113,11 @@ define(
                 },
                 onRemoveAllLocalStorage: function(element) {
                     FireStoragePlusStorage.removeAllLocalStorage();
-                    this.show();
+                    FireStoragePlusDomplate.renderPreferedStorage();
                 },
-                onRemoveLocalStorageForScope: function(element) {
-                    FireStoragePlusStorage.removeLocalStorageForScope(FireStoragePlusStorage.getCurrentScope());
-                    this.show();
+                onRemoveStorageForCurrentScope: function(storage) {
+                    FireStoragePlusStorage.removeStorageForCurrentScope(storage);
+                    FireStoragePlusDomplate.renderPreferedStorage();
                 },
                 onEdit: function(element, storage) {
                     var params = {

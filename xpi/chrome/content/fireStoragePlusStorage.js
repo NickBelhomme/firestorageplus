@@ -4,6 +4,8 @@ define(
         'firestorageplus/fireStoragePlusStorageItem'
     ],
     function(FBTrace, FireStoragePlusStorageItem) {
+        var databaseConnection = null;
+    
         var FireStoragePlusStorage = {
             getStorageItems: function (storage) {
                 var storageObject = this.getStorageObject(storage);
@@ -83,10 +85,6 @@ define(
                 return object;
             },
             remove : function(storage) {
-                if (storage.type === 'localStorage') {
-                    this.removeLocalStorage(storage);
-                    return;
-                }
                 var context = Firebug.currentContext;
                 Firebug.CommandLine.evaluate(
                     '(' + storage.type  +'.removeItem("' + storage.key + '"))',
@@ -141,32 +139,23 @@ define(
                           item = new FireStoragePlusStorageItem(statement.getString(1), statement.getString(2), 'localStorage', this.normalizeScope(statement.getString(0)));
                           items.push(item);
                       }
-                      statement.reset();
+                      statement.finalize();
                 }
                 return items;
             },
             getDatabaseConnection : function() {
+                if (databaseConnection !== null) {
+                    return databaseConnection;
+                } 
                 Components.utils.import("resource://gre/modules/FileUtils.jsm");
                 var file = FileUtils.getFile("ProfD", ["webappsstore.sqlite"]);
                 if (file.exists()) {
                     var storageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
-                    return storageService.openDatabase(file);
+                    databaseConnection = storageService.openDatabase(file);
+                    return databaseConnection;
                 }
+                
                 return false;
-            },
-            getInMemoryDatabaseConnection : function() {
-                var storageService = Components.classes["@mozilla.org/storage/service;1"].getService(Components.interfaces.mozIStorageService);
-                //return storageService.openSpecialDatabase('storage-sqlite');
-            },
-            removeLocalStorage : function (storage) {
-                var db = this.getDatabaseConnection();
-                var statement;
-                if (db) {
-                    statement = db.createStatement("delete from webappsstore2 where scope = :scope and key = :key");
-                    statement.params.scope = this.denormalizeScope(this.getCurrentScope());
-                    statement.params.key = storage.key;
-                    statement.execute();
-                }
             },
             removeAllLocalStorage : function (scope) {
                 var db = this.getDatabaseConnection();
@@ -174,29 +163,18 @@ define(
                     db.executeSimpleSQL("delete from webappsstore2");
                 }
             },
-            removeLocalStorageForScope : function (scope) {
-                var db = this.getDatabaseConnection();
-                var statement;
-                if (db) {
-                    statement = db.createStatement("delete from webappsstore2 where scope = :scope");
-                    statement.params.scope = this.denormalizeScope(scope);
-                    statement.execute();
-                }
-            },
-            denormalizeScope : function (scope) {
-                //input format "http://www.facebook.com:443"                
-                //returned format "moc.koobecaf.www.:https:443"                
-                var values = scope.split(":");
-                
-                if (4 != values.length) {
-                    return scope;
-                }
-                
-                var port = values.pop().slice(0, -1);
-                var scheme = values.shift();
-                var host = values.pop();
-                host = host.substr(2).split("").reverse().join("");
-                return host + ".:" + scheme + ":" + port;
+            removeStorageForCurrentScope : function (storage) {
+                var context = Firebug.currentContext;
+                Firebug.CommandLine.evaluate(
+                    storage + '.clear()',
+                    context,
+                    null, null,
+                    function(result) {
+                    },
+                    function() {
+                    },
+                    true
+                );                
             },
             normalizeScope : function (string) {
                 //input format "moc.koobecaf.www.:https:443"    

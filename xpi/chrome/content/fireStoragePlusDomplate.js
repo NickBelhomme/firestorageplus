@@ -447,7 +447,7 @@ define(
                     renderStorage: function(storage) {
                         var i, imax, items;
                         if (storage === 'allLocalStorage') {
-                            items = FireStoragePlusStorage.getAllLocalStorageItems(storage);
+                            items = FireStoragePlusStorage.getAllLocalStorageItems();
                         } else {
                             items = FireStoragePlusStorage.getStorageItems(storage);
                         }
