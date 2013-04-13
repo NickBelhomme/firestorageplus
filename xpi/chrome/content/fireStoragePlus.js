@@ -49,7 +49,11 @@ define(
                     var activeSubPanel = this.getActiveToolbarButton().id;
                     
                     var items = [];
-                    if (Dom.getAncestorByClass(target, "storageHeaderRow")) {
+                    if (!Dom.getAncestorByClass(target, "storageRow")) {
+                        items.push({
+                            label: Locale.$STR("firestorageplus.About"),
+                            command: Obj.bindFixed(this.onAbout, this)
+                        });
                         return items;
                     }
                     
