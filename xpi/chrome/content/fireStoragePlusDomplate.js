@@ -51,10 +51,10 @@ define(
                     ),
                     toolbar: DIV(
                         {'id': 'fspToolbar'},
-                        BUTTON({id: 'all-current-scope'}, Locale.$STR("firestorageplus.Both")),
-                        BUTTON({id: 'localstorage-current-scope'}, Locale.$STR("firestorageplus.localStorage")),
-                        BUTTON({id: 'sessionstorage-current-scope'}, Locale.$STR("firestorageplus.sessionStorage")),
-                        BUTTON({id: 'localStorage-all'}, Locale.$STR("firestorageplus.localStorage all scopes"))
+                        BUTTON({id: 'all-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.Both")),
+                        BUTTON({id: 'localstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage")),
+                        BUTTON({id: 'sessionstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.sessionStorage")),
+                        BUTTON({id: 'localStorage-all', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage all scopes"))
                     ),
                     storageitemtag: FOR(
                         'item', '$array',
