@@ -54,7 +54,7 @@ define(
                         BUTTON({id: 'all-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.Both")),
                         BUTTON({id: 'localstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage")),
                         BUTTON({id: 'sessionstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.sessionStorage")),
-                        BUTTON({id: 'localStorage-all', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage all scopes"))
+                        BUTTON({id: 'localStorage-all', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage_all_scopes"))
                     ),
                     storageitemtag: FOR(
                         'item', '$array',

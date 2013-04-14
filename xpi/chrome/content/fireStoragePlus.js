@@ -86,21 +86,21 @@ define(
                         if (activeSubPanel !== 'sessionstorage-current-scope') {
                             items.push("-");
                             items.push({
-                                label: Locale.$STR("firestorageplus.Clear localStorages for current scope"),
+                                label: Locale.$STR("firestorageplus.Clear_localStorage_for_current_scope"),
                                 command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'localStorage')
                             });
                         }
                         if (activeSubPanel !== 'localstorage-current-scope') {
                             items.push("-");
                             items.push({
-                                label: Locale.$STR("firestorageplus.Clear sessionStorages for current scope"),
+                                label: Locale.$STR("firestorageplus.Clear_sessionStorage_for_current_scope"),
                                 command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'sessionStorage')
                             });
                         }
                     } else {
                         items.push("-");
                         items.push({
-                            label: Locale.$STR("firestorageplus.Clear localStorages for all scopes"),
+                            label: Locale.$STR("firestorageplus.Clear_localStorage_for_all_scopes"),
                             command: Obj.bindFixed(this.onRemoveAllLocalStorage, this)
                         });
                     }
