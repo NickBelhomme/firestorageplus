@@ -16,6 +16,7 @@
                    em:description="FireStorage Plus! - Manage web storage"
                    em:contributor="Nick Belhomme"
                    em:homepageURL="https://github.com/NickBelhomme/firestorageplus"
+                   em:translator="David Pablos (es)"
                    em:iconURL="chrome://firestorageplus/content/icon.png">
     <em:targetApplication RDF:resource="rdf:#$41y0G2"/>
   </RDF:Description>
