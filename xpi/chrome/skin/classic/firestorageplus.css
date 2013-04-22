@@ -149,7 +149,7 @@
 
 /* This style makes sure that only portion of text is visible
  depending on current size (width) of the parent column */
-.storageValueLabel {
+.storageLabel {
     overflow: hidden;
     display: -moz-box;
 }

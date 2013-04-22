@@ -7,14 +7,17 @@ define(
         'firebug/lib/string',
         'firebug/lib/options',
         "firebug/lib/domplate",
-        "firestorageplus/fireStoragePlusStorage"
+        "firestorageplus/fireStoragePlusStorage",
+        "firestorageplus/fireStoragePlusHeaderEvents"
     ],
-    function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage) {
+    function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage, FireStoragePlusHeaderEvents) {
 
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'firestorageplus.lastSortedColumn';
+        var columnWidthPref = 'firestorageplus.columnWidth';
         var preferedStorage = 'firestorageplus.preferedStorage';
         var storageTable = null;
+        var openedRows = [];
         
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
@@ -65,7 +68,9 @@ define(
                                )
                             ),
                             TD({'class': 'storageKeyCol storageCol'},
-                                DIV({'class': 'storageKeyLabel storageLabel'}, '$item.key')
+                                DIV({'class': 'storageKeyLabel storageLabel'}, 
+                                    SPAN('$item.key')
+                                )
                             ),
                             TD({'class': 'storageValueCol storageCol'},
                                 DIV({'class': 'storageValueLabel storageLabel'},
@@ -78,9 +83,9 @@ define(
                                 )
                             ),
                             TD({'class': 'storageScopeCol storageCol'},
-                                    DIV({'class': 'storageScopeLabel storageLabel $item.scope'},
-                                            SPAN('$item.scope')
-                                    )
+                                DIV({'class': 'storageScopeLabel storageLabel'},
+                                    SPAN('$item.scope')
+                                )
                             )
                         )
                     ),
@@ -237,11 +242,13 @@ define(
                         var opened = Css.hasClass(row, 'opened');
                         if (opened && forceOpen)
                             return;
+                        
 
                         Css.toggleClass(row, 'opened');
-
+                        
                         if (Css.hasClass(row, 'opened'))
                         {
+                            this.addToOpenedRowStack(row.repObject);
                             var bodyRow = this.bodyRow.insertRows({}, row)[0];
                             var bodyCol = bodyRow.getElementsByClassName('storageInfoCol').item(0);
                             var storageInfo = this.insertBodyTag(row.repObject, bodyCol);
@@ -254,8 +261,31 @@ define(
                         }
                         else
                         {
+                            this.removeFromOpenedRowStack(row.repObject);
                             row.parentNode.removeChild(row.nextSibling);
                         }
+                    },
+                    removeFromOpenedRowStack: function(storage) {
+                        for (var i=0; i<openedRows.length; i++) {
+                            if (openedRows[i].type === storage.type && openedRows[i].key === storage.key) {
+                                openedRows.splice(i, 1);
+                                return;
+                            }
+                        }
+                    },
+                    addToOpenedRowStack: function(storage) {
+                        if (this.isOpenedRowStack(storage)) {
+                            return;
+                        }
+                        openedRows.push(storage);
+                    },
+                    isOpenedRowStack: function(storage) {
+                        for (var i=0; i<openedRows.length; i++) {
+                            if (openedRows[i].type === storage.type && openedRows[i].key === storage.key) {
+                                return true;
+                            }
+                        }
+                        return false;
                     },
                     insertBodyTag : function (storage, bodyCol) {
                         var storageInfo = this.bodyTag.replace({storage: storage}, bodyCol);
@@ -275,11 +305,6 @@ define(
                             return this.selectTab(tab);
 
                         return false;
-                    },
-                    onClickHeader: function(event) {
-                        var table = Dom.getAncestorByClass(event.target, 'storageTable');
-                        var column = Dom.getAncestorByClass(event.target, 'storageHeaderCell');
-                        this.sortColumn(table, column);
                     },
                     sortColumn: function(table, col, direction) {
                         if (!col)
@@ -423,10 +448,36 @@ define(
                                 break;
                         }
                         this.sortStorages();
+                        var rows = storageTable.getElementsByClassName("storageRow");
+                        for (var i = 0, imax = rows.length; i < imax; i++) {
+                            if (this.isOpenedRowStack(rows.item(i).repObject)) {
+                                this.toggleRow(rows.item(i));
+                            }
+                        }
                     },
                     renderStorageHeading : function (node) {
                         var storageTable = this.storageheadingtag.append({}, node);
-                        storageTable.lastChild.firstChild.addEventListener('click', this.onClickHeader.bind(this));
+
+                        // Update columns width according to the preferences.
+                        var header = Dom.getElementByClass(storageTable, "storageHeaderRow");
+                        var columns = header.getElementsByTagName("td");
+                        for (var i=0; i<columns.length; i++)
+                        {
+                            var col = columns[i];
+                            var colId = col.getAttribute("id");
+                            if (!colId || !col.style)
+                                continue;
+
+                            var width = Options.get(columnWidthPref + colId);
+                            if (width)
+                                col.style.width = width + "px";
+                        }
+                        FireStoragePlusHeaderEvents.setDomplate(this);
+                        header.addEventListener("mousedown", FireStoragePlusHeaderEvents.onMouseDown.bind(FireStoragePlusHeaderEvents));
+                        header.addEventListener("mousemove", FireStoragePlusHeaderEvents.onMouseMove.bind(FireStoragePlusHeaderEvents));
+                        header.addEventListener("mouseup", FireStoragePlusHeaderEvents.onMouseUp.bind(FireStoragePlusHeaderEvents));
+                        header.addEventListener("mouseout", FireStoragePlusHeaderEvents.onMouseOut.bind(FireStoragePlusHeaderEvents));
+                        header.addEventListener("click", FireStoragePlusHeaderEvents.onMouseClick.bind(FireStoragePlusHeaderEvents));
                         return storageTable;
                     },
                     sortStorages : function() {
@@ -444,7 +495,7 @@ define(
                             element.parentNode.removeChild(element);
                         }
                     },
-                    renderStorage: function(storage) {
+                    renderStorage: function(storage) { 
                         var i, imax, items;
                         if (storage === 'allLocalStorage') {
                             items = FireStoragePlusStorage.getAllLocalStorageItems();
