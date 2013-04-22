@@ -162,10 +162,8 @@
  nsIScriptError: XUL box for div element contained an inline #text child,
  forcing all its children to be wrapped in a block. [JavaScript Warning:
  "XUL box for div element contained an inline #text child, forcing all
- its children to be wrapped in a block."
- {file: "chrome://firestorageplus/content/panel.html" line: 0}]
- */
-.storageValueLabel span {
+ its children to be wrapped in a block." */
+.storageLabel span {
     display: inline-block;
 }
 
