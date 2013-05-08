@@ -16,7 +16,10 @@ define(
                     var item = new FireStoragePlusStorageItem(subject.key, subject.newValue, 'localStorage', subject.url);
                     Firebug.Console.log(item.toJSONObject());
                 }
-                FireStoragePlusDomplate.renderPreferedStorage();
+                var panel = Firebug.currentContext.getPanel("firestorageplus");
+                if (panel) {
+                    FireStoragePlusDomplate.renderPreferedStorage();
+                }
             },
             register: function() {
                 this.getObserverService().addObserver(this, this.topic, false);
