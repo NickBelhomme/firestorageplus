@@ -428,6 +428,9 @@ define(
                         this.renderPreferedStorage();
                     },
                     renderPreferedStorage : function() {
+                        if (storageTable === null) {
+                            return;
+                        }
                         while (row = storageTable.lastChild.firstChild.nextSibling) {
                             storageTable.lastChild.removeChild(row);
                         }
