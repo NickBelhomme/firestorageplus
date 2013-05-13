@@ -53,7 +53,7 @@ define(
                         )
                     ),
                     toolbar: DIV(
-                        {'id': 'fspToolbar'},
+                        {'id': 'fspToolbar', 'class': 'toolbar'},
                         BUTTON({id: 'all-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.Both")),
                         BUTTON({id: 'localstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage")),
                         BUTTON({id: 'sessionstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.sessionStorage")),

@@ -49,60 +49,69 @@ define(
                     var activeSubPanel = this.getActiveToolbarButton().id;
                     
                     var items = [];
-                    if (!Dom.getAncestorByClass(target, "storageRow")) {
-                        items.push({
-                            label: Locale.$STR("firestorageplus.About"),
-                            command: Obj.bindFixed(this.onAbout, this)
-                        });
-                        return items;
-                    }
-                    
+                    var isStorageRow = Dom.getAncestorByClass(target, "storageRow");
+                    var enableContextMenu = isStorageRow || (!Dom.getAncestorByClass(target, "toolbar") && !Dom.getAncestorByClass(target, "storageTable")) ;
                     if (activeSubPanel !== 'localStorage-all') {
-                        items.push({
-                          label: Locale.$STR("firestorageplus.Copy"),
-                          command: Obj.bindFixed(this.onCopy, this, storage)
-                        });
-                        items.push("-");
-                        items.push({
-                          disabled: !this.hasClipBoard(),
-                          label: Locale.$STR("firestorageplus.Paste"),
-                          command: Obj.bindFixed(this.onPaste, this, storage)
-                        });
-                        items.push("-");
-                        items.push({
-                          label: Locale.$STR("firestorageplus.Remove"),
-                          command: Obj.bindFixed(this.onRemove, this, target, storage)
-                        });
-                        items.push("-");
-                        items.push({
-                          label: Locale.$STR("firestorageplus.Edit"),
-                          command: Obj.bindFixed(this.onEdit, this, target, storage)
-                        });
-                        items.push("-");
-                        items.push({
-                            label: Locale.$STR("firestorageplus.Create"),
-                            command: Obj.bindFixed(this.onCreate, this)
-                        });
-                        if (activeSubPanel !== 'sessionstorage-current-scope') {
-                            items.push("-");
+                        if (isStorageRow) {
                             items.push({
-                                label: Locale.$STR("firestorageplus.Clear_localStorage_for_current_scope"),
-                                command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'localStorage')
+                              label: Locale.$STR("firestorageplus.Copy"),
+                              command: Obj.bindFixed(this.onCopy, this, storage)
+                            });
+                            items.push("-");
+                        }
+                        
+                        if (enableContextMenu) {
+                            items.push({
+                              disabled: !this.hasClipBoard(),
+                              label: Locale.$STR("firestorageplus.Paste"),
+                              command: Obj.bindFixed(this.onPaste, this, storage)
                             });
                         }
-                        if (activeSubPanel !== 'localstorage-current-scope') {
+                        
+                        if (isStorageRow) {
                             items.push("-");
                             items.push({
-                                label: Locale.$STR("firestorageplus.Clear_sessionStorage_for_current_scope"),
-                                command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'sessionStorage')
+                              label: Locale.$STR("firestorageplus.Remove"),
+                              command: Obj.bindFixed(this.onRemove, this, target, storage)
                             });
+                            items.push("-");
+                            items.push({
+                              label: Locale.$STR("firestorageplus.Edit"),
+                              command: Obj.bindFixed(this.onEdit, this, target, storage)
+                            });
+                        }
+                        
+                        if (enableContextMenu) {
+                            items.push("-");
+                            items.push({
+                                label: Locale.$STR("firestorageplus.Create"),
+                                command: Obj.bindFixed(this.onCreate, this)
+                            });
+                            
+                            if (activeSubPanel !== 'sessionstorage-current-scope') {
+                                items.push("-");
+                                items.push({
+                                    label: Locale.$STR("firestorageplus.Clear_localStorage_for_current_scope"),
+                                    command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'localStorage')
+                                });
+                            }
+                            
+                            if (activeSubPanel !== 'localstorage-current-scope') {
+                                items.push("-");
+                                items.push({
+                                    label: Locale.$STR("firestorageplus.Clear_sessionStorage_for_current_scope"),
+                                    command: Obj.bindFixed(this.onRemoveStorageForCurrentScope, this, 'sessionStorage')
+                                });
+                            }
                         }
                     } else {
-                        items.push("-");
-                        items.push({
-                            label: Locale.$STR("firestorageplus.Clear_localStorage_for_all_scopes"),
-                            command: Obj.bindFixed(this.onRemoveAllLocalStorage, this)
-                        });
+                        if (enableContextMenu) {
+                            items.push("-");
+                            items.push({
+                                label: Locale.$STR("firestorageplus.Clear_localStorage_for_all_scopes"),
+                                command: Obj.bindFixed(this.onRemoveAllLocalStorage, this)
+                            });
+                        }
                     }
                     
                     items.push("-");
