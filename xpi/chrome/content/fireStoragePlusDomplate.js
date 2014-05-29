@@ -15,9 +15,9 @@ define(
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'firestorageplus.lastSortedColumn';
         var columnWidthPref = 'firestorageplus.columnWidth';
-        var preferedStorage = 'firestorageplus.preferedStorage';
         var storageTable = null;
         var openedRows = [];
+        var fireStoragePlus = null;
         
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
@@ -393,6 +393,7 @@ define(
                         Options.set(lastSortedColumn, prefValue);
                     },
                     render: function(panel) {
+                        fireStoragePlus = panel;
                         this.clear(panel.panelNode);
                         storageTable = this.renderStorageHeading(panel.panelNode);
                         this.renderPreferedStorage();
@@ -405,7 +406,7 @@ define(
                             storageTable.lastChild.removeChild(row);
                         }
                         
-                        switch (Options.get(preferedStorage)) {
+                        switch (fireStoragePlus.getPreferedStorage()) {
                             case 'all-current-scope':
                                 this.renderStorage('localStorage');
                                 this.renderStorage('sessionStorage');

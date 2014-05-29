@@ -48,7 +48,7 @@ define(
                 getPanelToolbarButtons: function()
                 {
                     var buttons = [];
-                    var activeToolbarButton = Options.get(preferedStorage);
+                    var activeToolbarButton = this.getPreferedStorage();
 
                     buttons.push({
                         label: Locale.$STR("firestorageplus.Both"),
@@ -101,10 +101,17 @@ define(
 
                     FireStoragePlusDomplate.renderPreferedStorage();
                 },
+                getPreferedStorage: function() {
+                    return Options.get(preferedStorage);
+                },
+                setPreferedStorage: function(storage) {
+                    Options.set(preferedStorage, storage);
+                    return this;
+                },
                 refresh: function() {
                 },
                 getContextMenuItems: function(storage, target, context) {
-                    var activeSubPanel = Options.get(preferedStorage);
+                    var activeSubPanel = this.getPreferedStorage();
                     
                     var items = [];
                     var isStorageRow = Dom.getAncestorByClass(target, "storageRow");
