@@ -5,14 +5,17 @@ define(
         'firebug/lib/trace',
         'firebug/lib/dom',
         'firebug/lib/css',
+        'firebug/lib/options',
         "firestorageplus/fireStoragePlusDomplate",
         "firestorageplus/fireStoragePlusClipboard",
         "firestorageplus/fireStoragePlusStorage",
         "firestorageplus/fireStoragePlusEdit",
         "firestorageplus/fireStoragePlusObserver"
     ],
-    function(Obj, Locale, FBTrace, Dom, Css, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit, FireStoragePlusObserver) {
+    function(Obj, Locale, FBTrace, Dom, Css, Options, FireStoragePlusDomplate, FireStoragePlusClipboard, FireStoragePlusStorage, FireStoragePlusEdit, FireStoragePlusObserver) {
         var panelName = 'firestorageplus';
+        var preferedStorage = 'firestorageplus.preferedStorage';
+
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var FireStoragePlus = function FireStoragePlus() {
            this.observer = null;
@@ -42,7 +45,62 @@ define(
                     Firebug.Panel.show.apply(this, arguments);
                     FireStoragePlusDomplate.render(this);
                 },
-                
+                getPanelToolbarButtons: function()
+                {
+                    var buttons = [];
+                    var activeToolbarButton = Options.get(preferedStorage);
+
+                    buttons.push({
+                        label: Locale.$STR("firestorageplus.Both"),
+                        id: 'all-current-scope',
+                        type: 'checkbox',
+                        className: 'fspToolbar-button',
+                        command: this.onClickToolbar
+                    });
+                    buttons.push({
+                        label: Locale.$STR("firestorageplus.localStorage"),
+                        id: 'localstorage-current-scope',
+                        type: 'checkbox',
+                        className: 'fspToolbar-button',
+                        command: this.onClickToolbar
+                    });
+                    buttons.push({
+                        label: Locale.$STR("firestorageplus.sessionStorage"),
+                        id: 'sessionstorage-current-scope',
+                        type: 'checkbox',
+                        className: 'fspToolbar-button',
+                        command: this.onClickToolbar
+                    });
+                    buttons.push({
+                        label: Locale.$STR("firestorageplus.localStorage_all_scopes"),
+                        id: 'localStorage-all',
+                        type: 'checkbox',
+                        className: 'fspToolbar-button',
+                        command: this.onClickToolbar
+                    });
+
+                    for (var i = 0, imax = buttons.length; i < imax; i++) {
+                        if (buttons[i].id === activeToolbarButton) {
+                            buttons[i].checked = true;
+                        }
+                    }
+
+
+
+                    return buttons;
+                },
+                onClickToolbar : function (event) {
+                    event.currentTarget.checked = true;
+                    Options.set(preferedStorage, event.currentTarget.id);
+                    var buttons = event.currentTarget.ownerDocument.getElementsByClassName('fspToolbar-button');
+                    for (var i = 0, imax = buttons.length; i < imax; i++) {
+                        if (buttons[i].id !== event.currentTarget.id) {
+                            buttons[i].checked = false;
+                        }
+                    }
+
+                    FireStoragePlusDomplate.renderPreferedStorage();
+                },
                 refresh: function() {
                 },
                 getContextMenuItems: function(storage, target, context) {

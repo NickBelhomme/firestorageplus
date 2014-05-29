@@ -406,6 +406,9 @@ define(
                         this.renderPreferedStorage();
                     },
                     renderToolbar : function (node) {
+                        if (Firebug.version.split('.')[0] === '2') {
+                            return; // rendering of toolbar is done in fireStoragePlus::getPanelToolbarButtons
+                        }
                         var toolbar = this.toolbar.append({}, node);
                         var children = toolbar.children;
                         var activeToolbarButton = Options.get(preferedStorage);
