@@ -15,9 +15,9 @@ define(
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'firestorageplus.lastSortedColumn';
         var columnWidthPref = 'firestorageplus.columnWidth';
-        var preferedStorage = 'firestorageplus.preferedStorage';
         var storageTable = null;
         var openedRows = [];
+        var fireStoragePlus = null;
         
         with (Domplate) {
             var FireStoragePlusDomplate = Domplate.domplate(
@@ -51,13 +51,6 @@ define(
                                 )
                             )
                         )
-                    ),
-                    toolbar: DIV(
-                        {'id': 'fspToolbar', 'class': 'toolbar'},
-                        BUTTON({id: 'all-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.Both")),
-                        BUTTON({id: 'localstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage")),
-                        BUTTON({id: 'sessionstorage-current-scope', class: 'toolbar-button'}, Locale.$STR("firestorageplus.sessionStorage")),
-                        BUTTON({id: 'localStorage-all', class: 'toolbar-button'}, Locale.$STR("firestorageplus.localStorage_all_scopes"))
                     ),
                     storageitemtag: FOR(
                         'item', '$array',
@@ -400,31 +393,9 @@ define(
                         Options.set(lastSortedColumn, prefValue);
                     },
                     render: function(panel) {
+                        fireStoragePlus = panel;
                         this.clear(panel.panelNode);
-                        this.renderToolbar(panel.panelNode);
                         storageTable = this.renderStorageHeading(panel.panelNode);
-                        this.renderPreferedStorage();
-                    },
-                    renderToolbar : function (node) {
-                        var toolbar = this.toolbar.append({}, node);
-                        var children = toolbar.children;
-                        var activeToolbarButton = Options.get(preferedStorage);
-                        
-                        for (var i = 0, imax = children.length; i < imax; i++) {
-                            children.item(i).addEventListener('click', this.onClickToolbar.bind(this));
-                            if (children.item(i).getAttribute('id') === activeToolbarButton) {
-                                Css.setClass(children.item(i), 'active');
-                            }
-                        }
-                        return toolbar;
-                    },
-                    onClickToolbar : function (event) {
-                        Options.set(preferedStorage, event.currentTarget.id);
-                        var children = event.currentTarget.parentElement.children;
-                        for (var i = 0, imax = children.length; i < imax; i++) {
-                            Css.removeClass(children.item(i), 'active');
-                        }
-                        Css.setClass(event.currentTarget, 'active');
                         this.renderPreferedStorage();
                     },
                     renderPreferedStorage : function() {
@@ -435,7 +406,7 @@ define(
                             storageTable.lastChild.removeChild(row);
                         }
                         
-                        switch (Options.get(preferedStorage)) {
+                        switch (fireStoragePlus.getPreferedStorage()) {
                             case 'all-current-scope':
                                 this.renderStorage('localStorage');
                                 this.renderStorage('sessionStorage');

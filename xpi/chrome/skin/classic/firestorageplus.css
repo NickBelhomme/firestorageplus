@@ -225,41 +225,6 @@
     display: table-cell;
 }
 
-#fspToolbar {
- background: -moz-linear-gradient(top, #f9fafd 0%, #e5eaf5 40%, #d9dff0 41%, #dfe6fd 100%);
- padding-left: 2em;
- border-bottom: 1px solid #b6bccc;
-}
-
-
-#fspToolbar button {
-    display: inline-block;
-    outline: none;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    border-radius: .3em;
-    border: 0;
-    background: none;
-    margin : 4px 0px;
-}
-#fspToolbar button:hover {
-    margin : 2px -1px;
-    text-decoration: none;
-    border: solid 1px #cecece;
-}
-#fspToolbar button:active, #fspToolbar button.active{
-    background: -moz-linear-gradient(top, #9fa0a2 0%, #d1d6e0 40%, #c7cddf 41%, #d4d9e8 100%);
-    border: solid 1px #666666;
-    position: relative;
-    top: 1px;
-}
-#fspToolbar button.active{
-    margin : 4px 0px;
-}
-
-
-
 .DBG_FIRESTORAGEPLUS {
     color: rgb(101, 0, 114);
 }
