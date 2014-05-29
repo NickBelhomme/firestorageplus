@@ -104,11 +104,11 @@ define(
                 refresh: function() {
                 },
                 getContextMenuItems: function(storage, target, context) {
-                    var activeSubPanel = this.getActiveToolbarButton().id;
+                    var activeSubPanel = Options.get(preferedStorage);
                     
                     var items = [];
                     var isStorageRow = Dom.getAncestorByClass(target, "storageRow");
-                    var enableContextMenu = isStorageRow || (!Dom.getAncestorByClass(target, "toolbar") && !Dom.getAncestorByClass(target, "storageTable")) ;
+                    var enableContextMenu = isStorageRow || !Dom.getAncestorByClass(target, "storageTable") ;
                     if (activeSubPanel !== 'localStorage-all') {
                         if (isStorageRow) {
                             items.push({
@@ -178,14 +178,6 @@ define(
                         command: Obj.bindFixed(this.onAbout, this)
                     });
                     return items;
-                },
-                getActiveToolbarButton: function() {
-                    var buttons = this.panelNode.getElementsByClassName('toolbar-button');
-                    for (var i =0; i<buttons.length; i++) {
-                        if (Css.hasClass(buttons[i], 'active')) {
-                            return buttons[i];
-                        }
-                    }
                 },
                 onCopy: function(clickedStorage) {
                     FireStoragePlusClipboard.copyTo(clickedStorage);
