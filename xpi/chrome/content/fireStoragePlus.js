@@ -89,7 +89,8 @@ define(
                         {
                             label: Locale.$STR("firestorageplus.IndexedDB"),
                             id: 'fspIndexedDB',
-                            type: 'menu'
+                            type: 'checkbox',
+                            command: this.onClickIndexedDB
                         }
                     ];
 
@@ -118,6 +119,10 @@ define(
                     domButton.label = domButton.label.substr(0, domButton.label.indexOf('('))  + ' ('+ checkedButton.label +')';
 
                     FireStoragePlusDomplate.renderPreferedStorage();
+                },
+                onClickIndexedDB : function (event) {
+                    var checkedButton = event.currentTarget;
+                    FireStoragePlusDomplate.renderIndexedDBStorage();
                 },
                 getPreferedStorage: function() {
                     return Options.get(preferedStorage);

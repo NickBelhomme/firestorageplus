@@ -8,9 +8,10 @@ define(
         'firebug/lib/options',
         "firebug/lib/domplate",
         "firestorageplus/fireStoragePlusStorage",
+        "firestorageplus/fireStoragePlusIndexedDB",
         "firestorageplus/fireStoragePlusHeaderEvents"
     ],
-    function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage, FireStoragePlusHeaderEvents) {
+    function(Events, Locale, Dom, Css, String, Options, Domplate, FireStoragePlusStorage, FireStoragePlusIndexedDB, FireStoragePlusHeaderEvents) {
 
         Locale.registerStringBundle("chrome://firestorageplus/locale/firestorageplus.properties");
         var lastSortedColumn = 'firestorageplus.lastSortedColumn';
@@ -398,6 +399,9 @@ define(
                         storageTable = this.renderStorageHeading(panel.panelNode);
                         this.renderPreferedStorage();
                     },
+                    renderIndexedDBStorage : function() {
+                        this.renderLocalIndexedDB();
+                    },
                     renderPreferedStorage : function() {
                         if (storageTable === null) {
                             return;
@@ -485,6 +489,10 @@ define(
                                 );
                             }
                         }
+                    },
+                    renderLocalIndexedDB: function() {
+                        var databases;
+                        databases = FireStoragePlusIndexedDB.getLocal();
                     }
                 }
             );
