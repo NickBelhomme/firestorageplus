@@ -2,7 +2,10 @@ firestorageplus
 ===============
 FireStorage Plus! - Manage web storage
 
-An extra Firebug tab which lets you inspect the local and session storage.
+An extra Firebug tab which lets you inspect
+
+* the local and session storage.
+* IndexedDB storage
 
 https://addons.mozilla.org/en-US/firefox/addon/firestorage-plus/
 
