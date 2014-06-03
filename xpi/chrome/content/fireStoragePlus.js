@@ -47,41 +47,56 @@ define(
                 },
                 getPanelToolbarButtons: function()
                 {
-                    var buttons = [];
+
                     var activeToolbarButton = this.getPreferedStorage();
 
-                    buttons.push({
-                        label: Locale.$STR("firestorageplus.Both"),
-                        id: 'all-current-scope',
-                        type: 'checkbox',
-                        className: 'fspToolbar-button',
-                        command: this.onClickToolbar
-                    });
-                    buttons.push({
-                        label: Locale.$STR("firestorageplus.localStorage"),
-                        id: 'localstorage-current-scope',
-                        type: 'checkbox',
-                        className: 'fspToolbar-button',
-                        command: this.onClickToolbar
-                    });
-                    buttons.push({
-                        label: Locale.$STR("firestorageplus.sessionStorage"),
-                        id: 'sessionstorage-current-scope',
-                        type: 'checkbox',
-                        className: 'fspToolbar-button',
-                        command: this.onClickToolbar
-                    });
-                    buttons.push({
-                        label: Locale.$STR("firestorageplus.localStorage_all_scopes"),
-                        id: 'localStorage-all',
-                        type: 'checkbox',
-                        className: 'fspToolbar-button',
-                        command: this.onClickToolbar
-                    });
+                    var buttons = [
+                        {
+                            label: Locale.$STR("firestorageplus.DOM Storage"),
+                            id: 'fspDomStorage',
+                            type: 'menu',
+                            items: [
+                                {
+                                    label: Locale.$STR("firestorageplus.Both"),
+                                    id: 'all-current-scope',
+                                    type: 'radio',
+                                    className: 'fspToolbar-button-dom',
+                                    command: this.onClickDomStorage
+                                },
+                                {
+                                    label: Locale.$STR("firestorageplus.localStorage"),
+                                    id: 'localstorage-current-scope',
+                                    type: 'radio',
+                                    className: 'fspToolbar-button-dom',
+                                    command: this.onClickDomStorage
+                                },
+                                {
+                                    label: Locale.$STR("firestorageplus.sessionStorage"),
+                                    id: 'sessionstorage-current-scope',
+                                    type: 'radio',
+                                    className: 'fspToolbar-button-dom',
+                                    command: this.onClickDomStorage
+                                },
+                                {
+                                    label: Locale.$STR("firestorageplus.localStorage_all_scopes"),
+                                    id: 'localStorage-all',
+                                    type: 'radio',
+                                    className: 'fspToolbar-button-dom',
+                                    command: this.onClickDomStorage
+                                }
+                            ]
+                        },
+                        {
+                            label: Locale.$STR("firestorageplus.IndexedDB"),
+                            id: 'fspIndexedDB',
+                            type: 'menu'
+                        }
+                    ];
 
-                    for (var i = 0, imax = buttons.length; i < imax; i++) {
-                        if (buttons[i].id === activeToolbarButton) {
-                            buttons[i].checked = true;
+                    for (var i = 0, imax = buttons[0].items.length; i < imax; i++) {
+                        if (buttons[0].items[i].id === activeToolbarButton) {
+                            buttons[0].items[i].checked = true;
+                            buttons[0].label = Locale.$STR("firestorageplus.DOM Storage") + ' ('+ buttons[0].items[i].label +')';
                         }
                     }
 
@@ -89,15 +104,18 @@ define(
 
                     return buttons;
                 },
-                onClickToolbar : function (event) {
-                    event.currentTarget.checked = true;
+                onClickDomStorage : function (event) {
+                    var checkedButton = event.currentTarget;
+                    checkedButton.checked = true;
                     Options.set(preferedStorage, event.currentTarget.id);
-                    var buttons = event.currentTarget.ownerDocument.getElementsByClassName('fspToolbar-button');
-                    for (var i = 0, imax = buttons.length; i < imax; i++) {
-                        if (buttons[i].id !== event.currentTarget.id) {
-                            buttons[i].checked = false;
+                    var domButtons = event.currentTarget.ownerDocument.getElementsByClassName('fspToolbar-button-dom');
+                    for (var i = 0, imax = domButtons.length; i < imax; i++) {
+                        if (domButtons[i].id !== event.currentTarget.id) {
+                            domButtons[i].checked = false;
                         }
                     }
+                    var domButton = event.currentTarget.ownerDocument.getElementById('fspDomStorage');
+                    domButton.label = domButton.label.substr(0, domButton.label.indexOf('('))  + ' ('+ checkedButton.label +')';
 
                     FireStoragePlusDomplate.renderPreferedStorage();
                 },
