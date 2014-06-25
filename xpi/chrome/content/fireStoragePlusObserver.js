@@ -9,17 +9,19 @@ define(
             this.topic = 'dom-storage2-changed';
             this.pref = 'firestorageplus.logEvents';
         };
-        
+
         FireStoragePlusObserver.prototype = {
             observe: function(subject, topic, data) {
                 if (Options.getPref(Firebug.prefDomain, this.pref)) {
                     var item = new FireStoragePlusStorageItem(subject.key, subject.newValue, 'localStorage', subject.url);
                     Firebug.Console.log(item.toJSONObject());
                 }
-                var panel = Firebug.currentContext.getPanel("firestorageplus");
-                if (panel) {
-                    FireStoragePlusDomplate.renderPreferedStorage();
-                }
+				if (Firebug.currentContext) {
+					var panel = Firebug.currentContext.getPanel("firestorageplus");
+					if (panel) {
+						FireStoragePlusDomplate.renderPreferedStorage();
+					}
+				}
             },
             register: function() {
                 this.getObserverService().addObserver(this, this.topic, false);
